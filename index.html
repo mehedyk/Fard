@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<!-- 
+  Fard (فَرْد) — A cryptographically secure password generator
+  Developed by @mehedyk (https://github.com/mehedyk)
+  License: All rights reserved. Do not reuse without explicit permission.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fard (فَرْد)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    [data-theme="light"] .checkbox-group{
+      border: 1px solid #F3F4F6;
+    }
+
+    [data-theme="light"] .placement-options{
+      border: 1px solid #F3F4F6;
+    }
+
+    :root{
+      /*Dark*/
+      --bg-gradient-start: #0b0b0b;
+      --bg-gradient-end: #121212;
+      --text-primary: #e0e0e0;
+      --text-secondary: #c2f0c2;
+      --container-bg: rgba(20, 20, 20, 0.95);
+      --header-gradient-start: #0f4037;
+      --header-gradient-end: #14532d;
+      --header-text: #e6ffe6;
+      --input-bg: #111;
+      --input-border: #333;
+      --input-focus: #39ff14;
+      --checkbox-bg: #1a1a1a;
+      --checkbox-hover: #222;
+      --btn-gradient-start: #14532d;
+      --btn-gradient-end: #0f4037;
+      --password-bg: #1a1a1a;
+      --password-color: #39ff14;
+      --password-border: #39ff14;
+      --strength-bg: #333;
+      --warning-bg: #4a2c17;
+      --warning-border: #ff8c00;
+      --warning-text: #ffb366;
+      --feedback-bg: #2a2a2a;
+      --feedback-border: #555;
+      --feedback-text: #ddd;
+      --info-text: #888;
+      --theme-btn-bg: rgba(255, 255, 255, 0.1);
+      --theme-btn-hover: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-theme="light"]{
+      /*Light*/
+      --bg-gradient-start: #F9FAFB;
+      --bg-gradient-end: #F9FAFB;
+      --text-primary: #111827;
+      --text-secondary: #FCD34D;
+      --container-bg: #FFFFFF;
+      --header-gradient-start: #14532D;
+      --header-gradient-end: #0F4037;
+      --header-text: #D97706;
+      --input-bg: #FFFFFF;
+      --input-border: #14532D;
+      --input-focus: #14532D;
+      --checkbox-bg: #FFFFFF;
+      --checkbox-hover: #F3F4F6;
+      --btn-gradient-start: #14532D;
+      --btn-gradient-end: #0F4037;
+      --password-bg: #FFFFFF;
+      --password-color: #14532D;
+      --password-border: #14532D;
+      --strength-bg: #F3F4F6;
+      --warning-bg: #FEF3CD;
+      --warning-border: #F59E0B;
+      --warning-text: #D97706;
+      --feedback-bg: #F9FAFB;
+      --feedback-border: #D1D5DB;
+      --feedback-text: #374151;
+      --info-text: #6B7280;
+      --theme-btn-bg: rgba(20, 83, 45, 0.1);
+      --theme-btn-hover: rgba(20, 83, 45, 0.2);
+    }
+
+    body{
+      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container{
+      max-width: 800px;
+      width: 100%;
+      background: var(--container-bg);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 255, 120, 0.05);
+      overflow: hidden;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    [data-theme="light"] .container{
+      box-shadow: 0 20px 40px rgba(20, 83, 45, 0.08);
+      border: 1px solid #F3F4F6;
+    }
+
+    .theme-toggle{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--theme-btn-bg);
+      border: none;
+      color: var(--header-text);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .theme-toggle:hover{
+      background: var(--theme-btn-hover);
+      transform: scale(1.1);
+    }
+
+    .header{
+      background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+      padding: 40px;
+      text-align: center;
+      color: var(--header-text);
+      transition: background 0.3s ease;
+    }
+
+    .header h1{
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .header p{
+      font-size: 1.2em;
+      font-style: italic;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .content{
+      padding: 40px;
+    }
+
+    .form-group{
+      margin-bottom: 25px;
+    }
+
+    label{
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: var(--text-primary);
+      transition: color 0.3s ease;
+    }
+
+    input,select{
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus{
+      outline: none;
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.2);
+    }
+
+    [data-theme="light"] input:focus, 
+    [data-theme="light"] select:focus{
+      box-shadow: 0 0 0 3px rgba(20, 83, 45, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-color: #14532D;
+    }
+
+    .btn{
+      background: linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end));
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 10px 0 0;
+      transition: all 0.3s ease;
+      width: 100%;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1em;
+    }
+
+    .btn:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(57, 255, 20, 0.3);
+    }
+
+    [data-theme="light"] .btn:hover{
+      box-shadow: 0 6px 18px rgba(20, 83, 45, 0.25);
+    }
+
+    #copyBtn{
+      transition: background 0.3s ease;
+    }
+
+    .checkbox-group{
+      display: flex;
+      align-items: center;
+      background: var(--checkbox-bg);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-group:hover{
+      background: var(--checkbox-hover);
+      transform: translateX(3px);
+    }
+
+    .checkbox-group input[type="checkbox"]{
+      width: 20px;
+      height: 20px;
+      margin-right: 15px;
+      accent-color: var(--input-focus);
+      cursor: pointer;
+    }
+
+    .checkbox-group label{
+      margin: 0;
+      cursor: pointer;
+      flex-grow: 1;
+      font-weight: normal;
+      font-size: 1em;
+    }
+
+    .placement-options{
+      background: var(--checkbox-bg);
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .placement-options .radio-group{
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .placement-options input[type="radio"]{
+      width: 20px;
+      height: 20px;
+      margin-right: 15px;
+      accent-color: var(--input-focus);
+      cursor: pointer;
+    }
+
+    .placement-options label{
+      margin: 0;
+      cursor: pointer;
+      font-weight: normal;
+      font-size: 0.9em;
+    }
+
+    .generated-password{
+      background: var(--password-bg);
+      color: var(--password-color);
+      border: 3px solid var(--password-border);
+      border-radius: 15px;
+      padding: 20px;
+      font-family: monospace;
+      font-size: 18px;
+      text-align: center;
+      margin: 30px 0;
+      word-break: break-all;
+      transition: all 0.3s ease;
+    }
+
+    .strength-bar{
+      height: 12px;
+      background: var(--strength-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 10px 0;
+      transition: background 0.3s ease;
+    }
+
+    .strength-fill{
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .strength-weak{background: linear-gradient(90deg, #7a1f1f, #c82333); width: 25%;}
+    .strength-fair{background: linear-gradient(90deg, #a68000, #ffc107); width: 50%;}
+    .strength-good{background: linear-gradient(90deg, #007c91, #17a2b8); width: 75%;}
+    .strength-strong{background: linear-gradient(90deg, #28a745, #39ff14); width: 100%;}
+
+    .strength-feedback{
+      background: var(--feedback-bg);
+      border: 1px solid var(--feedback-border);
+      color: var(--feedback-text);
+      padding: 10px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 0.85em;
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    .warning{
+      background: var(--warning-bg);
+      border: 2px solid var(--warning-border);
+      color: var(--warning-text);
+      padding: 12px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-size: 0.9em;
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    #lengthValue{
+      display: inline-block;
+      margin-left: 10px;
+      background: var(--btn-gradient-start);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    #strengthText{
+      text-align: center;
+      font-weight: bold;
+      color: var(--text-primary);
+      margin-top: 5px;
+      transition: color 0.3s ease;
+    }
+
+    .info-text{
+      color: var(--info-text);
+      font-size: 0.9em;
+      margin-top: 5px;
+      font-style: italic;
+      transition: color 0.3s ease;
+    }
+
+    .footer-credit{
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--info-text);
+      margin-top: 30px;
+      padding: 10px 0;
+      border-top: 1px solid var(--feedback-border);
+      transition: color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .footer-credit a{
+      color: var(--password-color);
+      font-weight: bold;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer-credit a:hover{
+      text-decoration: underline;
+      color: var(--btn-gradient-start);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="themeIcon">🌙</span>
+    </button>
+    <div class="header">
+      <h1>Fard (فَرْد)</h1>
+      <p>Uniqueness isn't special. It's expected.</p>
+    </div>
+    <div class="content">
+      <div class="form-group">
+        <label for="length">Password Length</label>
+        <input type="range" id="length" min="4" max="128" value="16" oninput="updateLength()" />
+        <span id="lengthValue">16</span>
+      </div>
+
+      <div class="form-group">
+        <label>Character Types</label>
+        <div class="checkbox-group">
+          <input type="checkbox" id="uppercase" checked />
+          <label for="uppercase">Uppercase Letters (A-Z)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="lowercase" checked />
+          <label for="lowercase">Lowercase Letters (a-z)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="numbers" checked />
+          <label for="numbers">Numbers (0-9)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="symbols" checked />
+          <label for="symbols">Symbols (!@#$%^&*)</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="includeWord">Include Word/Phrase (will be kept intact)</label>
+        <input type="text" id="includeWord" placeholder="e.g. MyPet2024, SecretPhrase, äöü@#$%" oninput="checkForConflicts()" />
+        
+        <div class="placement-options" id="placementOptions" style="display: none;">
+          <label style="margin-bottom: 10px; font-weight: bold; font-size: 0.95em;">Phrase Placement:</label>
+          <div class="radio-group">
+            <input type="radio" id="placementRandom" name="placement" value="random" checked />
+            <label for="placementRandom">Random position (anywhere in password)</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="placementBeginEnd" name="placement" value="beginend" />
+            <label for="placementBeginEnd">Beginning or end only</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="placementBeginning" name="placement" value="beginning" />
+            <label for="placementBeginning">Always at beginning</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="placementEnd" name="placement" value="end" />
+            <label for="placementEnd">Always at end</label>
+          </div>
+        </div>
+        <div class="info-text">💡 Your phrase will be inserted as-is without modification</div>
+      </div>
+
+      <div class="form-group">
+        <label for="excludeChars">Exclude Characters</label>
+        <input type="text" id="excludeChars" placeholder="e.g. 0O1lI" oninput="checkForConflicts()" />
+      </div>
+
+      <div class="warning" id="conflictWarning">
+        ⚠️ Some characters in your word/phrase are also in exclude list and will be removed.
+      </div>
+
+      <button class="btn" onclick="generatePassword()">🎲 Generate Password</button>
+
+      <div class="generated-password" id="generatedPassword" aria-live="polite" role="region" style="display: none;"></div>
+      
+      <div style="text-align: center;">
+        <button class="btn" onclick="copyPassword()" id="copyBtn" style="display: none;">📋 Copy Password</button>
+      </div>
+
+      <div class="strength-bar">
+        <div class="strength-fill" id="strengthBar"></div>
+      </div>
+      <p id="strengthText"></p>
+      <div class="strength-feedback" id="strengthFeedback"></div>
+    </div>
+    <div class="footer-credit">
+      A <a href="https://github.com/mehedyk" target="_blank" rel="noopener noreferrer">mehedyk</a> product.
+    </div>
+  </div>
+
+  <script>
+    /*
+      Fard by @mehedyk
+      This code is protected by a custom license.
+      Redistribution, reuse, or modification is prohibited without permission.
+    */
+
+    function updateLength(){
+      document.getElementById('lengthValue').textContent = document.getElementById('length').value;
+    }
+
+    function toggleCheckbox(id){
+      const checkbox = document.getElementById(id);
+      checkbox.checked = !checkbox.checked;
+    }
+
+    function checkForConflicts(){
+      const includeWord = document.getElementById('includeWord').value;
+      const excludeChars = document.getElementById('excludeChars').value;
+      const warning = document.getElementById('conflictWarning');
+      const placementOptions = document.getElementById('placementOptions');
+      
+      placementOptions.style.display = includeWord.trim() ? 'block' : 'none';
+      
+      if(includeWord && excludeChars){
+        const hasConflict = Array.from(includeWord).some(char => excludeChars.includes(char));
+        warning.style.display = hasConflict ? 'block' : 'none';
+      }else{
+        warning.style.display = 'none';
+      }
+    }
+
+    function copyPassword(){
+      const password = document.getElementById('generatedPassword').textContent;
+      navigator.clipboard.writeText(password).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✅ Copied!';
+        btn.style.background = 'linear-gradient(135deg, #28a745, #39ff14)';
+        setTimeout(() =>{
+          btn.textContent = originalText;
+          btn.style.background = `linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end))`;
+        }, 2000);
+      }).catch(() =>{
+        alert('Failed to copy password to clipboard');
+      });
+    }
+
+    function toggleTheme(){
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+      const currentTheme = html.getAttribute('data-theme');
+      
+      if(currentTheme === 'light') {
+        html.removeAttribute('data-theme');
+        themeIcon.textContent = '🌙';
+        try{
+          localStorage.setItem('theme', 'dark');
+        } catch(e){}
+      } else{
+        html.setAttribute('data-theme', 'light');
+        themeIcon.textContent = '☀️';
+        try{
+          localStorage.setItem('theme', 'light');
+        }catch(e){}
+      }
+    }
+
+    function initializeTheme(){
+      const themeIcon = document.getElementById('themeIcon');
+      let savedTheme = 'dark';
+      
+      try{
+        savedTheme = localStorage.getItem('theme') || 'dark';
+      }catch(e){}
+      
+      if(savedTheme === 'light'){
+        document.documentElement.setAttribute('data-theme', 'light');
+        themeIcon.textContent = '☀️';
+      }else{
+        document.documentElement.removeAttribute('data-theme');
+        themeIcon.textContent = '🌙';
+      }
+    }
+
+    function escapeRegExp(string){
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function insertPhraseAtRandomPosition(randomPart, phrase){
+      if (randomPart.length === 0) return phrase;
+      
+      const randomArray = new Uint8Array(1);
+      crypto.getRandomValues(randomArray);
+      const position = randomArray[0] % (randomPart.length + 1);
+      
+      return randomPart.slice(0, position) + phrase + randomPart.slice(position);
+    }
+
+    function cryptoShuffle(array){
+      const arr = [...array];
+      for(let i=arr.length-1;i>0;i--){
+        const rv = crypto.getRandomValues(new Uint32Array(1))[0];
+        const j = rv % (i + 1);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.join('');
+    }
+
+    function generateRandomCharacter(charset){
+      if (!charset || charset.length === 0) {
+        return '';
+      }
+      const array = new Uint8Array(1);
+      crypto.getRandomValues(array);
+      return charset[array[0] % charset.length];
+    }
+
+    function generateRandomPart(length, fullCharset, charsets){
+      if (length <= 0 || !fullCharset) return '';
+      
+      let result = '';
+      const validCharsets = charsets.filter(set => set.length > 0);
+      
+      if (validCharsets.length > 1 && length >= validCharsets.length){
+        for(let charset of validCharsets){
+          result += generateRandomCharacter(charset);
+        }
+        
+        const remaining = length - validCharsets.length;
+        for(let i = 0; i < remaining; i++){
+          result+=generateRandomCharacter(fullCharset);
+        }
+        
+        result = cryptoShuffle(result);
+      }else{
+        for(let i=0;i<length;i++){
+          result += generateRandomCharacter(fullCharset);
+        }
+      }
+      return result;
+    }
+
+    function generatePassword(){
+      try{
+        const length = parseInt(document.getElementById('length').value);
+        const uppercase = document.getElementById('uppercase').checked;
+        const lowercase = document.getElementById('lowercase').checked;
+        const numbers = document.getElementById('numbers').checked;
+        const symbols = document.getElementById('symbols').checked;
+        const includeWord = document.getElementById('includeWord').value;
+        const excludeChars = document.getElementById('excludeChars').value;
+        
+        const placementElement = document.querySelector('input[name="placement"]:checked');
+        const placement = placementElement ? placementElement.value : 'random';
+
+        let charsets = [];
+        if (uppercase) charsets.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        if (lowercase) charsets.push('abcdefghijklmnopqrstuvwxyz');
+        if (numbers) charsets.push('0123456789');
+        if (symbols) charsets.push('!@#$%^&*()_+-=[]{}|;:,.<>?');
+
+        let fullCharset = '';
+        charsets.forEach(set => fullCharset += set);
+
+        if(excludeChars){
+          for(let c of excludeChars){
+            fullCharset = fullCharset.replace(new RegExp(escapeRegExp(c), 'g'), '');
+            charsets = charsets.map(set => set.replace(new RegExp(escapeRegExp(c), 'g'), ''));
+          }
+          charsets = charsets.filter(set => set.length > 0);
+        }
+
+        fullCharset = [...new Set(fullCharset)].join('');
+
+        if (fullCharset === '' && !includeWord) {
+          alert('Please select at least one character type or add a word/phrase!');
+          return;
+        }
+
+        if(includeWord && includeWord.length >= length) {
+          alert(`Word/phrase "${includeWord}" is too long for password length ${length}. Please use a shorter word or increase password length.`);
+          return;
+        }
+
+        let password = '';
+        let remainingLength = length;
+
+        if (includeWord) {
+          remainingLength -= includeWord.length;
+        }
+
+        const randomPart = generateRandomPart(remainingLength, fullCharset, charsets);
+
+        if (includeWord) {
+          switch (placement) {
+            case 'random':
+              password = insertPhraseAtRandomPosition(randomPart, includeWord);
+              break;
+            case 'beginend':
+              const randomChoice = new Uint8Array(1);
+              crypto.getRandomValues(randomChoice);
+              if (randomChoice[0] < 128) {
+                password = includeWord + randomPart;
+              } else {
+                password = randomPart + includeWord;
+              }
+              break;
+            case 'beginning':
+              password = includeWord + randomPart;
+              break;
+            case 'end':
+              password = randomPart + includeWord;
+              break;
+            default:
+              password = randomPart + includeWord;
+              break;
+          }
+        } else{
+          password = randomPart;
+        }
+
+        if (!password) {
+          password = generateRandomPart(length, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '0123456789']);
+        }
+
+        document.getElementById('generatedPassword').style.display = 'block';
+        document.getElementById('generatedPassword').textContent = password;
+        document.getElementById('copyBtn').style.display = 'inline-block';
+
+        checkPasswordStrength(password, fullCharset.length || 62);
+        
+      } catch (error) {
+        console.error('Password generation error:', error);
+        alert('An error occurred while generating the password. Please try again.');
+      }
+    }
+
+    function checkPasswordStrength(password, charsetSize) {
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (password.length >= 12) score++;
+      if (password.length >= 16) score++;
+      if (password.length >= 20) score++;
+      if (/[a-z]/.test(password)) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      const bar = document.getElementById('strengthBar');
+      const text = document.getElementById('strengthText');
+
+      if (score <= 3) {
+        bar.className = 'strength-fill strength-weak';
+        text.textContent = 'Weak';
+      } else if (score <= 5) {
+        bar.className = 'strength-fill strength-fair';
+        text.textContent = 'Fair';
+      } else if (score <= 7) {
+        bar.className = 'strength-fill strength-good';
+        text.textContent = 'Good';
+      } else {
+        bar.className = 'strength-fill strength-strong';
+        text.textContent = 'Very Strong';
+      }
+
+      let entropyText = ' | Entropy: N/A';
+      if (charsetSize > 0 && password.length > 0) {
+        const entropy = password.length * Math.log2(charsetSize);
+        entropyText = ` | Entropy: ${Math.round(entropy)} bits`;
+      }
+      text.textContent += entropyText;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        initializeTheme();
+        updateLength();
+        generatePassword();
+        
+        document.getElementById('includeWord').addEventListener('input', checkForConflicts);
+      } catch (error) {
+        console.error('Initialization error:', error);
+      }
+    });
+  </script>
+</body>
+</html>
