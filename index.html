@@ -484,7 +484,12 @@
       <div class="strength-feedback" id="strengthFeedback"></div>
     </div>
     <div class="footer-credit">
-      A <a href="https://github.com/mehedyk" target="_blank" rel="noopener noreferrer">mehedyk</a> product.
+      A <a href="https://github.com/mehedyk" target="_blank" rel="noopener noreferrer">mehedyk</a> product.<br>
+      All rights reserved.
+      &copy; <span id="currentYear"></span>.
+      <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+      </script>
     </div>
   </div>
 
