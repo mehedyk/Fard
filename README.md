@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0.0-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0.1-brightgreen?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-All_Rights_Reserved-red?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-cryptographically_secure-blue?style=for-the-badge)
 ![Made with Love](https://img.shields.io/badge/made_with-♥-ff69b4?style=for-the-badge)
