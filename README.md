@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="assets/fard-wordmark.png" alt="Fard (فَرْد) Password Generator" width="600">
+  <img src="assets/fard-logo-animated.svg" alt="Fard logo" width="140">
+
+# Fard (فَرْد)
+
 </div>
 
 <div align="center">
@@ -13,7 +16,7 @@
 
 **A cryptographically secure password generator that doesn't compromise.**
 
-[🚀 Live Demo](#) • [📖 Documentation](#features) • [💬 Report Issue](#)
+[🚀 Live Demo](https://fard-pw.netlify.app/) • [📖 Features](#-features) • [💬 Report Issue](https://github.com/mehedyk/Fard/issues)
 
 </div>
 
@@ -21,11 +24,11 @@
 
 ## ✨ What is Fard?
 
-**Fard** (فَرْد) means "unique" or "singular" in Arabic. This password generator lives up to its name by creating truly unique, cryptographically secure passwords using the Web Crypto API. No predictable patterns, no pseudo-random nonsense—just pure randomness powered by your browser's native cryptography.
+**Fard** (فَرْد) means "unique" or "singular" in Arabic. This password generator lives up to its name by creating unique, cryptographically secure passwords with the Web Crypto API. Every character comes from your browser's secure random number generator, never from `Math.random()`.
 
 ### 🎯 Philosophy
 
-> In a world where data breaches are common, weak passwords are inexcusable. Fard ensures every password generated is a fortress—unpredictable, strong, and truly random.
+> In a world where data breaches are common, weak passwords are inexcusable. Fard makes strong passwords the easy default: unpredictable, generated locally, and scored honestly.
 
 ---
 
@@ -41,19 +44,19 @@
 <td width="50%">
 
 ### 🔒 **Cryptographically Secure**
-Uses `crypto.getRandomValues()` for true randomness—no Math.random() vulnerabilities here.
+Uses `crypto.getRandomValues()` with rejection sampling to avoid modulo bias. No `Math.random()` anywhere.
 
 ### 🎨 **Beautiful Dark/Light Themes**
 Switch seamlessly between elegant dark and light modes with smooth transitions.
 
 ### 🧩 **Custom Phrase Integration**
-Include memorable words or phrases while maintaining security with random character padding.
+Include a memorable word or phrase and Fard weaves random characters around it. The phrase adds no entropy: the strength score counts only the random characters.
 
 </td>
 <td width="50%">
 
 ### ⚙️ **Flexible Configuration**
-- Password length: 4-128 characters
+- Password length: 4-128 characters (slider or exact number)
 - Uppercase, lowercase, numbers, symbols
 - Character exclusion options
 - Smart placement controls
@@ -62,7 +65,7 @@ Include memorable words or phrases while maintaining security with random charac
 Instant entropy calculation and visual strength indicators.
 
 ### 🎲 **Smart Generation**
-Guarantees at least one character from each selected type.
+Includes at least one character from each selected type whenever the length leaves room for it.
 
 </td>
 </tr>
@@ -76,8 +79,8 @@ Guarantees at least one character from each selected type.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/mehedyk/fard.git
-   cd fard
+   git clone https://github.com/mehedyk/Fard.git
+   cd Fard
    ```
 
 2. **Open `index.html` in your browser:**
@@ -96,7 +99,7 @@ Guarantees at least one character from each selected type.
 
 ### 📦 Or Download
 
-Simply download `index.html` and run it locally. Everything is self-contained in a single file.
+Download the repository as a ZIP and open `index.html`. Everything the page needs (fonts and icons included) is in the repo, so it also runs offline.
 
 ---
 
@@ -148,45 +151,46 @@ Generated: aBcDeFgHjKmNpQrStUvWxYz
 
 Fard uses the Web Crypto API (`crypto.getRandomValues()`), which provides:
 
-- **True randomness** from the operating system's entropy sources
+- **A CSPRNG** seeded by the operating system's entropy sources
 - **No predictable patterns** unlike `Math.random()`
-- **CSPRNG** (Cryptographically Secure Pseudo-Random Number Generator)
+- **Unbiased selection** via rejection sampling, so no character is more likely than another
+- **Secure shuffling**: the Fisher-Yates shuffle also uses the CSPRNG
 
 ### Password Strength Calculation
 
-Each password is analyzed for:
-- **Length** (longer = stronger)
-- **Character diversity** (uppercase, lowercase, numbers, symbols)
-- **Entropy bits** (calculated as: `length × log₂(charset_size)`)
+Strength is an entropy estimate in bits:
 
-**Strength Ratings:**
-- 🔴 **Weak** (score ≤ 3)
-- 🟡 **Fair** (score 4-5)
-- 🔵 **Good** (score 6-7)
-- 🟢 **Very Strong** (score ≥ 8)
+```
+entropy = randomLength × log₂(charsetSize)
+randomLength = password length − phrase length
+```
+
+- **Your phrase counts as 0 bits.** Fard assumes an attacker could guess it, so only the random characters are credited.
+- **Placement adds a little:** a random phrase position adds log₂(positions) bits, and "beginning or end" adds 1 bit.
+- **Excluded characters** shrink the charset and are reflected in the score.
+
+**Strength ratings:**
+- 🔴 **Weak** (< 40 bits)
+- 🟡 **Fair** (40–64 bits)
+- 🔵 **Good** (65–79 bits)
+- 🟢 **Very Strong** (≥ 80 bits)
+
+The score is guidance, not a guarantee. It assumes the attacker knows the character set you chose.
+
+---
 
 ### No Data Collection
 
 - ✅ **100% client-side** - passwords never leave your browser
 - ✅ **No analytics** - zero tracking or telemetry
-- ✅ **No external requests** - works completely offline
+- ✅ **No external requests** - fonts and icons are bundled, so it works offline (the Fard Vault link opens another site only if you click it)
 - ✅ **Privacy first** - your secrets stay secret
 
 ---
 
-## 🎨 Screenshots
+## 🎨 Themes
 
-<div align="center">
-
-### Dark Mode
-![Dark Mode Preview - Elegant green-themed interface with neon accents]
-
-### Light Mode
-![Light Mode Preview - Clean, professional interface with forest green palette]
-
-*Seamless theme switching with preserved user preferences*
-
-</div>
+Fard has a dark theme (default) and a light "eggshell" theme. Your choice is saved in your browser's `localStorage` (the only thing Fard stores) and never leaves your device.
 
 ---
 
@@ -196,51 +200,58 @@ Each password is analyzed for:
 
 - **Pure HTML/CSS/JavaScript** - No frameworks, no bloat
 - **Web Crypto API** - Industry-standard cryptography
-- **JetBrains Mono Font** - Beautiful monospace typography
+- **JetBrains Mono** - bundled locally under the SIL Open Font License (see `assets/fonts/`)
 - **CSS Custom Properties** - Dynamic theming system
 
 ### Browser Compatibility
 
-| Browser | Minimum Version | Status |
-|---------|----------------|--------|
-| Chrome | 11+ | ✅ Fully Supported |
-| Firefox | 4+ | ✅ Fully Supported |
-| Safari | 3.1+ | ✅ Fully Supported |
-| Edge | 12+ | ✅ Fully Supported |
-| Opera | 15+ | ✅ Fully Supported |
+Generation needs the Web Crypto API and CSS custom properties. The Copy button needs the async Clipboard API, which sets the practical minimum below (approximate, not formally tested):
+
+| Browser | Approx. minimum |
+|---------|----------------|
+| Chrome | 66+ |
+| Firefox | 63+ |
+| Safari | 13.1+ |
+| Edge | 79+ |
+
+The Clipboard API also requires a secure context (HTTPS or localhost).
 
 ### File Structure
 
 ```
-fard/
-├── index.html          # Complete application (self-contained)
-├── README.md          # This file
-└── LICENSE            # License information
+Fard/
+├── index.html          # The whole app (HTML, CSS, JS)
+├── assets/             # Logo, favicons, README images
+│   └── fonts/          # JetBrains Mono (woff2) + OFL license
+├── brand/              # Animated logo exports (GIF/MP4) for social posts
+├── _headers            # Netlify security headers (CSP)
+├── LICENSE
+├── SECURITY.md
+└── README.md
 ```
 
 ---
 
 ## 💡 Why Fard?
 
-### vs. Other Password Generators
+### At a Glance
 
-| Feature | Fard | Others |
-|---------|------|--------|
-| Cryptographically Secure | ✅ | ⚠️ Some use Math.random() |
-| Offline Capable | ✅ | ❌ Often require internet |
-| Custom Phrase Integration | ✅ | ❌ Rare feature |
-| Theme Support | ✅ | ⚠️ Limited |
-| Single File | ✅ | ❌ Usually multi-file |
-| Privacy Focused | ✅ | ⚠️ Varies |
-| Open Inspection | ✅ | ⚠️ Often obfuscated |
+| Feature | Fard |
+|---------|------|
+| Cryptographically secure randomness | ✅ |
+| Works offline | ✅ |
+| Custom phrase integration | ✅ |
+| Dark and light themes | ✅ |
+| No tracking or analytics | ✅ |
+| Source available for inspection | ✅ (proprietary license, see below) |
 
 ### Use Cases
 
-- 🏢 **Enterprise** - Generate secure credentials for systems
-- 👤 **Personal** - Create strong passwords for online accounts
-- 🔐 **Security Audits** - Test password strength requirements
-- 📚 **Education** - Teach password security principles
-- 🛠️ **Development** - Generate API keys, tokens, secrets
+- 👤 **Personal** - strong passwords for your own accounts
+- 📚 **Education** - see how entropy and secure randomness work
+- 🛠️ **Development** - generate secrets for your own projects
+
+Anything beyond personal use needs written permission (see the license).
 
 ---
 
@@ -278,7 +289,7 @@ fard/
 ## 📜 License
 
 ```
-Copyright (c) 2024 @mehedyk (https://github.com/mehedyk)
+Copyright (c) 2025 @mehedyk (https://github.com/mehedyk)
 All Rights Reserved.
 
 PROPRIETARY LICENSE
@@ -393,12 +404,12 @@ Passionate about creating secure, privacy-focused tools that respect users. Fard
 
 **Questions? Licensing inquiries? Feature requests?**
 
-[Open an Issue](https://github.com/mehedyk/fard/issues) • [Visit Portfolio](https://mehedy.netlify.app) • [Email](mailto:kawser2305341202@diu.edu.bd)
+[Open an Issue](https://github.com/mehedyk/Fard/issues) • [Visit Portfolio](https://mehedy.netlify.app) • [Email](mailto:kawser2305341202@diu.edu.bd)
 
 ### Get in Touch
 
 - 💼 **Professional Inquiries:** [Portfolio](https://mehedy.netlify.app)
-- 🐛 **Bug Reports:** [Issue Tracker](https://github.com/mehedyk/fard/issues)
+- 🐛 **Bug Reports:** [Issue Tracker](https://github.com/mehedyk/Fard/issues)
 - 🔒 **Security:** Private disclosure to [@mehedyk](https://github.com/mehedyk)
 - 📜 **Licensing:** Contact for commercial use permissions
 
