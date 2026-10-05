@@ -1,4 +1,6 @@
-# <div align="center">🔐 Fard (فَرْد)</div>
+<div align="center">
+  <img src="assets/fard-wordmark.png" alt="Fard (فَرْد) Password Generator" width="600">
+</div>
 
 <div align="center">
 
@@ -28,6 +30,11 @@
 ---
 
 ## 🌟 Features
+
+<div align="center">
+  <img src="assets/fard-features.png" alt="Fard Key Features" width="550">
+</div>
+<br>
 
 <table>
 <tr>
@@ -107,6 +114,11 @@ Simply download `index.html` and run it locally. Everything is self-contained in
 #### 🔤 Include Custom Phrases
 
 Add memorable words or phrases that will be preserved in your password:
+
+<div align="center">
+  <img src="assets/fard-anatomy.png" alt="Anatomy of a password - Fard weaves your phrase into real entropy" width="550">
+</div>
+<br>
 
 ```
 Phrase: "MyDog2024"
@@ -356,12 +368,12 @@ If you discover a security issue:
 <img src="https://github.com/mehedyk.png" width="150" height="150" style="border-radius: 50%; border: 4px solid #39ff14;" alt="mehedyk">
 
 ### **S.M. Mehedy Kawser**
-### [@mehedyk](https://github.com/mehedyk)
+### [@mehedyk](https://mehedy.netlify.app)
 
 <!--- *Software Developer • Security Enthusiast • Open Source Advocate* -->
 
 [![GitHub](https://img.shields.io/badge/GitHub-mehedyk-181717?style=for-the-badge&logo=github)](https://github.com/mehedyk)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-39ff14?style=for-the-badge&logo=web)](https://github.com/mehedyk)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-39ff14?style=for-the-badge&logo=web)](https://mehedy.netlify.app)
 
 </div>
 
@@ -381,11 +393,11 @@ Passionate about creating secure, privacy-focused tools that respect users. Fard
 
 **Questions? Licensing inquiries? Feature requests?**
 
-[Open an Issue](https://github.com/mehedyk/fard/issues) • [Visit Profile](https://github.com/mehedyk) • [Email](mailto:kawser2305341202@diu.edu.bd)
+[Open an Issue](https://github.com/mehedyk/fard/issues) • [Visit Portfolio](https://mehedy.netlify.app) • [Email](mailto:kawser2305341202@diu.edu.bd)
 
 ### Get in Touch
 
-- 💼 **Professional Inquiries:** [GitHub Profile](https://github.com/mehedyk)
+- 💼 **Professional Inquiries:** [Portfolio](https://mehedy.netlify.app)
 - 🐛 **Bug Reports:** [Issue Tracker](https://github.com/mehedyk/fard/issues)
 - 🔒 **Security:** Private disclosure to [@mehedyk](https://github.com/mehedyk)
 - 📜 **Licensing:** Contact for commercial use permissions

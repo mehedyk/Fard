@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- 
   Fard (فَرْد) — A cryptographically secure password generator
-  Developed by @mehedyk (https://github.com/mehedyk)
+  Developed by @mehedyk (https://mehedy.netlify.app)
   License: All rights reserved. Do not reuse without explicit permission.
 -->
 <html lang="en">
@@ -9,7 +9,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fard (فَرْد)</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+  <meta name="description" content="A cryptographically secure password generator that weaves memorable phrases into real entropy. Powered by the Web Crypto API." />
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" href="assets/fard-icon-1024.png" />
+  <link rel="apple-touch-icon" href="assets/fard-icon-1024.png" />
+
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fard-pw.netlify.app/" />
+  <meta property="og:title" content="Fard (فَرْد) — Cryptographically Secure Password Generator" />
+  <meta property="og:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
+  <meta property="og:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fard (فَرْد) — Cryptographically Secure Password Generator" />
+  <meta name="twitter:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
+  <meta name="twitter:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
+
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     *{
@@ -19,11 +37,11 @@
     }
 
     [data-theme="light"] .checkbox-group{
-      border: 1px solid #F3F4F6;
+      border: 1px solid #E5E2DA;
     }
 
     [data-theme="light"] .placement-options{
-      border: 1px solid #F3F4F6;
+      border: 1px solid #E5E2DA;
     }
 
     :root{
@@ -59,39 +77,39 @@
     }
 
     [data-theme="light"]{
-      /*Light*/
-      --bg-gradient-start: #F9FAFB;
-      --bg-gradient-end: #F9FAFB;
-      --text-primary: #111827;
-      --text-secondary: #FCD34D;
+      /*Light Eggshell Theme*/
+      --bg-gradient-start: #F5F2EB;
+      --bg-gradient-end: #EDE8DE;
+      --text-primary: #1F2937;
+      --text-secondary: #D1FAE5;
       --container-bg: #FFFFFF;
       --header-gradient-start: #14532D;
       --header-gradient-end: #0F4037;
-      --header-text: #D97706;
-      --input-bg: #FFFFFF;
-      --input-border: #14532D;
-      --input-focus: #14532D;
-      --checkbox-bg: #FFFFFF;
-      --checkbox-hover: #F3F4F6;
-      --btn-gradient-start: #14532D;
+      --header-text: #FFFFFF;
+      --input-bg: #FAF8F5;
+      --input-border: #D6D3CD;
+      --input-focus: #15803D;
+      --checkbox-bg: #FAF8F5;
+      --checkbox-hover: #F0ECE1;
+      --btn-gradient-start: #15803D;
       --btn-gradient-end: #0F4037;
-      --password-bg: #FFFFFF;
-      --password-color: #14532D;
-      --password-border: #14532D;
-      --strength-bg: #F3F4F6;
-      --warning-bg: #FEF3CD;
+      --password-bg: #FAF8F5;
+      --password-color: #15803D;
+      --password-border: #15803D;
+      --strength-bg: #E5E2DA;
+      --warning-bg: #FEF3C7;
       --warning-border: #F59E0B;
-      --warning-text: #D97706;
-      --feedback-bg: #F9FAFB;
-      --feedback-border: #D1D5DB;
+      --warning-text: #92400E;
+      --feedback-bg: #FAF8F5;
+      --feedback-border: #D6D3CD;
       --feedback-text: #374151;
-      --info-text: #6B7280;
-      --theme-btn-bg: rgba(20, 83, 45, 0.1);
-      --theme-btn-hover: rgba(20, 83, 45, 0.2);
+      --info-text: #78716C;
+      --theme-btn-bg: rgba(255, 255, 255, 0.2);
+      --theme-btn-hover: rgba(255, 255, 255, 0.35);
     }
 
     body{
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
       background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
       color: var(--text-primary);
       min-height: 100vh;
@@ -212,7 +230,7 @@
       margin: 10px 10px 0 0;
       transition: all 0.3s ease;
       width: 100%;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
       font-size: 1em;
     }
 
@@ -521,6 +539,9 @@
       <div class="warning" id="conflictWarning">
         ⚠️ Some characters in your word/phrase are also in exclude list and will be removed.
       </div>
+      <div class="warning" id="lengthWarning">
+        ⚠️ Your word/phrase is too long for the selected password length.
+      </div>
 
       <button class="btn" onclick="generatePassword()">🎲 Generate Password</button>
 
@@ -532,11 +553,11 @@
 
       <div class="vault-link-section" style="text-align: center; margin: 20px 0;">
         <div class="vault-banner">
-          <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 10px;">
-            🔐 Need a secure place to store this password?
+          <p style="font-size: 0.9em; margin-bottom: 10px; color: var(--text-primary); opacity: 0.9;">
+            🔐 Fard Vault is being fixed right now, we will be back!
           </p>
-          <a href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer" class="vault-link-btn">
-            Save to Fard Vault →
+          <a href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer" class="vault-link-btn" style="opacity: 0.85;">
+            Fard Vault (Maintenance) ⏳
           </a>
         </div>
       </div>
@@ -549,33 +570,27 @@
     </div>
 
     <div class="footer-credit">
-      A <a href="https://github.com/mehedyk" target="_blank" rel="noopener noreferrer">mehedyk</a> product. 
-      Works with <a href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer">Fard Vault</a>. 
+      A <a href="https://mehedy.netlify.app" target="_blank" rel="noopener noreferrer">mehedyk</a> product. 
+      Fard Vault is being fixed right now, we will be back. 
       All rights reserved. &copy; <span id="currentYear"></span>.
       <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
       </script>
     </div>
-
-    <!-- <div class="footer-credit">
-      A <a href="https://github.com/mehedyk" target="_blank" rel="noopener noreferrer">mehedyk</a> product.<br>
-      All rights reserved.
-      &copy; <span id="currentYear"></span>.
-      <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-      </script>
-    </div> -->
   </div>
 
   <script>
     /*
-      Fard by @mehedyk
+      Fard by @mehedyk (https://mehedy.netlify.app)
       This code is protected by a custom license.
       Redistribution, reuse, or modification is prohibited without permission.
     */
 
+    let copyTimeout = null;
+
     function updateLength(){
       document.getElementById('lengthValue').textContent = document.getElementById('length').value;
+      checkForConflicts();
     }
 
     function toggleCheckbox(id){
@@ -586,31 +601,49 @@
     function checkForConflicts(){
       const includeWord = document.getElementById('includeWord').value;
       const excludeChars = document.getElementById('excludeChars').value;
-      const warning = document.getElementById('conflictWarning');
+      const length = parseInt(document.getElementById('length').value);
+      const conflictWarning = document.getElementById('conflictWarning');
+      const lengthWarning = document.getElementById('lengthWarning');
       const placementOptions = document.getElementById('placementOptions');
       
       placementOptions.style.display = includeWord.trim() ? 'block' : 'none';
       
+      if (includeWord && includeWord.length >= length) {
+        if (lengthWarning) {
+          lengthWarning.textContent = `⚠️ Word/phrase (${includeWord.length} chars) is ≥ total password length (${length}). Please increase length or shorten phrase.`;
+          lengthWarning.style.display = 'block';
+        }
+      } else if (lengthWarning) {
+        lengthWarning.style.display = 'none';
+      }
+
       if(includeWord && excludeChars){
         const hasConflict = Array.from(includeWord).some(char => excludeChars.includes(char));
-        warning.style.display = hasConflict ? 'block' : 'none';
-      }else{
-        warning.style.display = 'none';
+        conflictWarning.style.display = hasConflict ? 'block' : 'none';
+      } else {
+        conflictWarning.style.display = 'none';
       }
     }
 
     function copyPassword(){
       const password = document.getElementById('generatedPassword').textContent;
+      if (!password) return;
+
       navigator.clipboard.writeText(password).then(() => {
         const btn = document.getElementById('copyBtn');
-        const originalText = btn.textContent;
+        if (copyTimeout) clearTimeout(copyTimeout);
+
         btn.textContent = '✅ Copied!';
         btn.style.background = 'linear-gradient(135deg, #28a745, #39ff14)';
-        setTimeout(() =>{
-          btn.textContent = originalText;
-          btn.style.background = `linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end))`;
+        btn.style.color = '#0b0b0b';
+
+        copyTimeout = setTimeout(() => {
+          btn.textContent = '📋 Copy Password';
+          btn.style.background = '';
+          btn.style.color = '';
+          copyTimeout = null;
         }, 2000);
-      }).catch(() =>{
+      }).catch(() => {
         alert('Failed to copy password to clipboard');
       });
     }
@@ -656,33 +689,35 @@
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
+    // Cryptographically secure unbiased random integer in [0, max - 1] (Rejection sampling eliminates modulo bias)
+    function getSecureRandomInt(max) {
+      if (max <= 1) return 0;
+      const maxValid = Math.floor(0xffffffff / max) * max;
+      const buffer = new Uint32Array(1);
+      do {
+        crypto.getRandomValues(buffer);
+      } while (buffer[0] >= maxValid);
+      return buffer[0] % max;
+    }
+
     function insertPhraseAtRandomPosition(randomPart, phrase){
       if (randomPart.length === 0) return phrase;
-      
-      const randomArray = new Uint8Array(1);
-      crypto.getRandomValues(randomArray);
-      const position = randomArray[0] % (randomPart.length + 1);
-      
+      const position = getSecureRandomInt(randomPart.length + 1);
       return randomPart.slice(0, position) + phrase + randomPart.slice(position);
     }
 
     function cryptoShuffle(array){
       const arr = [...array];
-      for(let i=arr.length-1;i>0;i--){
-        const rv = crypto.getRandomValues(new Uint32Array(1))[0];
-        const j = rv % (i + 1);
+      for(let i = arr.length - 1; i > 0; i--){
+        const j = getSecureRandomInt(i + 1);
         [arr[i], arr[j]] = [arr[j], arr[i]];
       }
       return arr.join('');
     }
 
     function generateRandomCharacter(charset){
-      if (!charset || charset.length === 0) {
-        return '';
-      }
-      const array = new Uint8Array(1);
-      crypto.getRandomValues(array);
-      return charset[array[0] % charset.length];
+      if (!charset || charset.length === 0) return '';
+      return charset[getSecureRandomInt(charset.length)];
     }
 
     function generateRandomPart(length, fullCharset, charsets){
@@ -698,12 +733,12 @@
         
         const remaining = length - validCharsets.length;
         for(let i = 0; i < remaining; i++){
-          result+=generateRandomCharacter(fullCharset);
+          result += generateRandomCharacter(fullCharset);
         }
         
         result = cryptoShuffle(result);
-      }else{
-        for(let i=0;i<length;i++){
+      } else {
+        for(let i = 0; i < length; i++){
           result += generateRandomCharacter(fullCharset);
         }
       }
@@ -747,9 +782,15 @@
           return;
         }
 
+        const lengthWarning = document.getElementById('lengthWarning');
         if(includeWord && includeWord.length >= length) {
-          alert(`Word/phrase "${includeWord}" is too long for password length ${length}. Please use a shorter word or increase password length.`);
+          if (lengthWarning) {
+            lengthWarning.textContent = `⚠️ Word/phrase (${includeWord.length} chars) is ≥ total password length (${length}). Please increase length or shorten phrase.`;
+            lengthWarning.style.display = 'block';
+          }
           return;
+        } else if (lengthWarning) {
+          lengthWarning.style.display = 'none';
         }
 
         let password = '';
@@ -767,9 +808,7 @@
               password = insertPhraseAtRandomPosition(randomPart, includeWord);
               break;
             case 'beginend':
-              const randomChoice = new Uint8Array(1);
-              crypto.getRandomValues(randomChoice);
-              if (randomChoice[0] < 128) {
+              if (getSecureRandomInt(2) === 0) {
                 password = includeWord + randomPart;
               } else {
                 password = randomPart + includeWord;
@@ -785,7 +824,7 @@
               password = randomPart + includeWord;
               break;
           }
-        } else{
+        } else {
           password = randomPart;
         }
 
@@ -797,7 +836,7 @@
         document.getElementById('generatedPassword').textContent = password;
         document.getElementById('copyBtn').style.display = 'inline-block';
 
-        checkPasswordStrength(password, fullCharset.length || 62);
+        checkPasswordStrength(remainingLength, fullCharset.length, includeWord, placement);
         
       } catch (error) {
         console.error('Password generation error:', error);
@@ -805,40 +844,58 @@
       }
     }
 
-    function checkPasswordStrength(password, charsetSize) {
-      let score = 0;
-      if (password.length >= 8) score++;
-      if (password.length >= 12) score++;
-      if (password.length >= 16) score++;
-      if (password.length >= 20) score++;
-      if (/[a-z]/.test(password)) score++;
-      if (/[A-Z]/.test(password)) score++;
-      if (/[0-9]/.test(password)) score++;
-      if (/[^A-Za-z0-9]/.test(password)) score++;
+    function checkPasswordStrength(randomLength, charsetSize, includeWord, placement) {
+      let entropy = 0;
+      if (charsetSize > 1 && randomLength > 0) {
+        entropy = randomLength * Math.log2(charsetSize);
+        if (includeWord) {
+          if (placement === 'random') {
+            entropy += Math.log2(randomLength + 1);
+          } else if (placement === 'beginend') {
+            entropy += 1;
+          }
+        }
+      }
+      const entropyBits = Math.max(0, Math.round(entropy));
 
       const bar = document.getElementById('strengthBar');
       const text = document.getElementById('strengthText');
+      const feedback = document.getElementById('strengthFeedback');
 
-      if (score <= 3) {
+      let rating = '';
+      if (entropyBits < 40) {
         bar.className = 'strength-fill strength-weak';
-        text.textContent = 'Weak';
-      } else if (score <= 5) {
+        rating = 'Weak';
+        if (feedback) {
+          feedback.textContent = includeWord && randomLength < 4
+            ? '⚠️ Very low randomness. Increase password length to add more random entropy around your phrase.'
+            : '⚠️ Weak (< 40 bits). Easily crackable. Increase length or enable more character types.';
+          feedback.style.display = 'block';
+        }
+      } else if (entropyBits < 65) {
         bar.className = 'strength-fill strength-fair';
-        text.textContent = 'Fair';
-      } else if (score <= 7) {
+        rating = 'Fair';
+        if (feedback) {
+          feedback.textContent = 'Moderate security (40–64 bits). Suitable for non-critical accounts.';
+          feedback.style.display = 'block';
+        }
+      } else if (entropyBits < 80) {
         bar.className = 'strength-fill strength-good';
-        text.textContent = 'Good';
+        rating = 'Good';
+        if (feedback) {
+          feedback.textContent = 'Strong security (65–79 bits). Resilient against typical offline brute-force attacks.';
+          feedback.style.display = 'block';
+        }
       } else {
         bar.className = 'strength-fill strength-strong';
-        text.textContent = 'Very Strong';
+        rating = 'Very Strong';
+        if (feedback) {
+          feedback.textContent = 'Cryptographically solid (80+ bits). Exceptional resistance against all brute-force attacks.';
+          feedback.style.display = 'block';
+        }
       }
 
-      let entropyText = ' | Entropy: N/A';
-      if (charsetSize > 0 && password.length > 0) {
-        const entropy = password.length * Math.log2(charsetSize);
-        entropyText = ` | Entropy: ${Math.round(entropy)} bits`;
-      }
-      text.textContent += entropyText;
+      text.textContent = `${rating} | Entropy: ${entropyBits} bits`;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
