@@ -9,6 +9,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fard (فَرْد)</title>
+  <meta name="theme-color" content="#0f4037" />
   <meta name="description" content="A cryptographically secure password generator that weaves memorable phrases into real entropy. Powered by the Web Crypto API." />
 
   <!-- Favicons -->
@@ -30,8 +31,22 @@
   <meta name="twitter:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
   <meta name="twitter:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
 
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    @font-face{
+      font-family: 'JetBrains Mono';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('assets/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+    }
+    @font-face{
+      font-family: 'JetBrains Mono';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('assets/fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2');
+    }
+
     *{
       margin: 0;
       padding: 0;
@@ -227,6 +242,11 @@
       transition: color 0.3s ease;
     }
 
+    input[type="range"]{
+      accent-color: var(--input-focus);
+      padding: 0;
+    }
+
     input,select{
       width: 100%;
       padding: 12px;
@@ -398,13 +418,13 @@
 
     #lengthValue{
       display: inline-block;
+      width: 90px;
       margin-left: 10px;
-      background: var(--btn-gradient-start);
-      color: white;
-      padding: 5px 12px;
-      border-radius: 10px;
+      padding: 6px 10px;
+      text-align: center;
+      font-family: inherit;
       font-weight: bold;
-      transition: background 0.3s ease;
+      font-size: 1em;
     }
 
     #strengthText{
@@ -501,7 +521,7 @@
 </head>
 <body>
   <div class="container">
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light theme">
       <span id="themeIcon">🌙</span>
     </button>
     <div class="header">
@@ -516,8 +536,8 @@
     <div class="content">
       <div class="form-group">
         <label for="length">Password Length</label>
-        <input type="range" id="length" min="4" max="128" value="16" oninput="updateLength()" />
-        <span id="lengthValue">16</span>
+        <input type="range" id="length" aria-label="Password length" min="4" max="128" value="16" oninput="updateLength()" />
+        <input type="number" id="lengthValue" min="4" max="128" value="16" inputmode="numeric" aria-label="Password length (type an exact number)" oninput="syncFromNumber()" onchange="commitNumber()" onkeydown="if(event.key==='Enter'){commitNumber();generatePassword();}" />
       </div>
 
       <div class="form-group">
@@ -623,8 +643,31 @@
 
     let copyTimeout = null;
 
+    // Slider moved: mirror it into the number box.
     function updateLength(){
-      document.getElementById('lengthValue').textContent = document.getElementById('length').value;
+      document.getElementById('lengthValue').value = document.getElementById('length').value;
+      checkForConflicts();
+    }
+
+    // Typing in the number box: follow along only while the value is valid,
+    // so partial input like "2" on the way to "20" isn't snapped to 4.
+    function syncFromNumber(){
+      const n = parseInt(document.getElementById('lengthValue').value, 10);
+      if (!isNaN(n) && n >= 4 && n <= 128) {
+        document.getElementById('length').value = n;
+        checkForConflicts();
+      }
+    }
+
+    // Finished typing (blur / Enter / Generate): clamp to 4-128 and sync both controls.
+    function commitNumber(){
+      const box = document.getElementById('lengthValue');
+      const slider = document.getElementById('length');
+      let n = parseInt(box.value, 10);
+      if (isNaN(n)) n = parseInt(slider.value, 10);
+      n = Math.min(128, Math.max(4, n));
+      box.value = n;
+      slider.value = n;
       checkForConflicts();
     }
 
@@ -782,6 +825,7 @@
 
     function generatePassword(){
       try{
+        commitNumber();
         const length = parseInt(document.getElementById('length').value);
         const uppercase = document.getElementById('uppercase').checked;
         const lowercase = document.getElementById('lowercase').checked;
