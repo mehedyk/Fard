@@ -171,6 +171,34 @@
       transition: background 0.3s ease;
     }
 
+    .brand{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .brand img{
+      flex-shrink: 0;
+    }
+
+    .brand-text{
+      text-align: left;
+    }
+
+    @media (max-width: 560px){
+      .brand{
+        flex-direction: column;
+        gap: 12px;
+      }
+      .brand-text{
+        text-align: center;
+      }
+      .header h1{
+        font-size: 2.2em;
+      }
+    }
+
     .header h1{
       font-size: 3em;
       margin-bottom: 10px;
@@ -477,9 +505,13 @@
       <span id="themeIcon">🌙</span>
     </button>
     <div class="header">
-      <img src="assets/fard-logo-animated.svg" alt="" width="96" height="96" style="display:block;margin:0 auto 12px" />
-      <h1>Fard (فَرْد)</h1>
-      <p>Uniqueness isn't special. It's expected.</p>
+      <div class="brand">
+        <img src="assets/fard-logo-animated.svg" alt="Fard logo" width="96" height="96" />
+        <div class="brand-text">
+          <h1>Fard (فَرْد)</h1>
+          <p>Uniqueness isn't special. It's expected.</p>
+        </div>
+      </div>
     </div>
     <div class="content">
       <div class="form-group">
