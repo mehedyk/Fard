@@ -1,993 +1,520 @@
 <!DOCTYPE html>
-<!-- 
+<!--
   Fard (فَرْد) — A cryptographically secure password generator
   Developed by @mehedyk (https://mehedy.netlify.app)
   License: All rights reserved. Do not reuse without explicit permission.
 -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fard (فَرْد)</title>
-  <meta name="theme-color" content="#0f4037" />
-  <meta name="description" content="A cryptographically secure password generator that weaves memorable phrases into real entropy. Powered by the Web Crypto API." />
-
-  <!-- Favicons -->
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
-  <link rel="icon" href="assets/favicon.ico" sizes="any" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-
-  <!-- Open Graph / Social Sharing -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://fard-pw.netlify.app/" />
-  <meta property="og:title" content="Fard (فَرْد) — Cryptographically Secure Password Generator" />
-  <meta property="og:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
-  <meta property="og:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Fard (فَرْد) — Cryptographically Secure Password Generator" />
-  <meta name="twitter:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
-  <meta name="twitter:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
-
-  <style>
-    @font-face{
-      font-family: 'JetBrains Mono';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('assets/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2');
-    }
-    @font-face{
-      font-family: 'JetBrains Mono';
-      font-style: normal;
-      font-weight: 700;
-      font-display: swap;
-      src: url('assets/fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2');
-    }
-
-    *{
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    [data-theme="light"] .checkbox-group{
-      border: 1px solid #E5E2DA;
-    }
-
-    [data-theme="light"] .placement-options{
-      border: 1px solid #E5E2DA;
-    }
-
-    :root{
-      /*Dark*/
-      --bg-gradient-start: #0b0b0b;
-      --bg-gradient-end: #121212;
-      --text-primary: #e0e0e0;
-      --text-secondary: #c2f0c2;
-      --container-bg: rgba(20, 20, 20, 0.95);
-      --header-gradient-start: #0f4037;
-      --header-gradient-end: #14532d;
-      --header-text: #e6ffe6;
-      --input-bg: #111;
-      --input-border: #333;
-      --input-focus: #39ff14;
-      --checkbox-bg: #1a1a1a;
-      --checkbox-hover: #222;
-      --btn-gradient-start: #14532d;
-      --btn-gradient-end: #0f4037;
-      --password-bg: #1a1a1a;
-      --password-color: #39ff14;
-      --password-border: #39ff14;
-      --strength-bg: #333;
-      --warning-bg: #4a2c17;
-      --warning-border: #ff8c00;
-      --warning-text: #ffb366;
-      --feedback-bg: #2a2a2a;
-      --feedback-border: #555;
-      --feedback-text: #ddd;
-      --info-text: #888;
-      --theme-btn-bg: rgba(255, 255, 255, 0.1);
-      --theme-btn-hover: rgba(255, 255, 255, 0.2);
-    }
-
-    [data-theme="light"]{
-      /*Light Eggshell Theme*/
-      --bg-gradient-start: #F5F2EB;
-      --bg-gradient-end: #EDE8DE;
-      --text-primary: #1F2937;
-      --text-secondary: #D1FAE5;
-      --container-bg: #FFFFFF;
-      --header-gradient-start: #14532D;
-      --header-gradient-end: #0F4037;
-      --header-text: #FFFFFF;
-      --input-bg: #FAF8F5;
-      --input-border: #D6D3CD;
-      --input-focus: #15803D;
-      --checkbox-bg: #FAF8F5;
-      --checkbox-hover: #F0ECE1;
-      --btn-gradient-start: #15803D;
-      --btn-gradient-end: #0F4037;
-      --password-bg: #FAF8F5;
-      --password-color: #15803D;
-      --password-border: #15803D;
-      --strength-bg: #E5E2DA;
-      --warning-bg: #FEF3C7;
-      --warning-border: #F59E0B;
-      --warning-text: #92400E;
-      --feedback-bg: #FAF8F5;
-      --feedback-border: #D6D3CD;
-      --feedback-text: #374151;
-      --info-text: #78716C;
-      --theme-btn-bg: rgba(255, 255, 255, 0.2);
-      --theme-btn-hover: rgba(255, 255, 255, 0.35);
-    }
-
-    body{
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-      color: var(--text-primary);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    .container{
-      max-width: 800px;
-      width: 100%;
-      background: var(--container-bg);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 255, 120, 0.05);
-      overflow: hidden;
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-
-    [data-theme="light"] .container{
-      box-shadow: 0 20px 40px rgba(20, 83, 45, 0.08);
-      border: 1px solid #F3F4F6;
-    }
-
-    .theme-toggle{
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: var(--theme-btn-bg);
-      border: none;
-      color: var(--header-text);
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      font-size: 1.5em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      z-index: 10;
-    }
-
-    .theme-toggle:hover{
-      background: var(--theme-btn-hover);
-      transform: scale(1.1);
-    }
-
-    .header{
-      background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
-      padding: 40px;
-      text-align: center;
-      color: var(--header-text);
-      transition: background 0.3s ease;
-    }
-
-    .brand{
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-    }
-
-    .brand img{
-      flex-shrink: 0;
-    }
-
-    .brand-text{
-      text-align: left;
-    }
-
-    @media (max-width: 560px){
-      .brand{
-        flex-direction: column;
-        gap: 12px;
-      }
-      .brand-text{
-        text-align: center;
-      }
-      .header h1{
-        font-size: 2.2em;
-      }
-    }
-
-    .header h1{
-      font-size: 3em;
-      margin-bottom: 10px;
-    }
-
-    .header p{
-      font-size: 1.2em;
-      font-style: italic;
-      color: var(--text-secondary);
-      transition: color 0.3s ease;
-    }
-
-    .content{
-      padding: 40px;
-    }
-
-    .form-group{
-      margin-bottom: 25px;
-    }
-
-    label{
-      display: block;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: var(--text-primary);
-      transition: color 0.3s ease;
-    }
-
-    input[type="range"]{
-      accent-color: var(--input-focus);
-      padding: 0;
-    }
-
-    input,select{
-      width: 100%;
-      padding: 12px;
-      border: 2px solid var(--input-border);
-      background: var(--input-bg);
-      color: var(--text-primary);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-    }
-
-    input:focus, select:focus{
-      outline: none;
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.2);
-    }
-
-    [data-theme="light"] input:focus, 
-    [data-theme="light"] select:focus{
-      box-shadow: 0 0 0 3px rgba(20, 83, 45, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
-      border-color: #14532D;
-    }
-
-    .btn{
-      background: linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end));
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 10px 10px 0 0;
-      transition: all 0.3s ease;
-      width: 100%;
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      font-size: 1em;
-    }
-
-    .btn:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(57, 255, 20, 0.3);
-    }
-
-    [data-theme="light"] .btn:hover{
-      box-shadow: 0 6px 18px rgba(20, 83, 45, 0.25);
-    }
-
-    #copyBtn{
-      transition: background 0.3s ease;
-    }
-
-    .checkbox-group{
-      display: flex;
-      align-items: center;
-      background: var(--checkbox-bg);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .checkbox-group:hover{
-      background: var(--checkbox-hover);
-      transform: translateX(3px);
-    }
-
-    .checkbox-group input[type="checkbox"]{
-      width: 20px;
-      height: 20px;
-      margin-right: 15px;
-      accent-color: var(--input-focus);
-      cursor: pointer;
-    }
-
-    .checkbox-group label{
-      margin: 0;
-      cursor: pointer;
-      flex-grow: 1;
-      font-weight: normal;
-      font-size: 1em;
-    }
-
-    .placement-options{
-      background: var(--checkbox-bg);
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
-      transition: background 0.3s ease;
-    }
-
-    .placement-options .radio-group{
-      display: flex;
-      align-items: center;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-
-    .placement-options input[type="radio"]{
-      width: 20px;
-      height: 20px;
-      margin-right: 15px;
-      accent-color: var(--input-focus);
-      cursor: pointer;
-    }
-
-    .placement-options label{
-      margin: 0;
-      cursor: pointer;
-      font-weight: normal;
-      font-size: 0.9em;
-    }
-
-    .generated-password{
-      background: var(--password-bg);
-      color: var(--password-color);
-      border: 3px solid var(--password-border);
-      border-radius: 15px;
-      padding: 20px;
-      font-family: monospace;
-      font-size: 18px;
-      text-align: center;
-      margin: 30px 0;
-      word-break: break-all;
-      transition: all 0.3s ease;
-    }
-
-    .strength-bar{
-      height: 12px;
-      background: var(--strength-bg);
-      border-radius: 6px;
-      overflow: hidden;
-      margin: 10px 0;
-      transition: background 0.3s ease;
-    }
-
-    .strength-fill{
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    .strength-weak{background: linear-gradient(90deg, #7a1f1f, #c82333); width: 25%;}
-    .strength-fair{background: linear-gradient(90deg, #a68000, #ffc107); width: 50%;}
-    .strength-good{background: linear-gradient(90deg, #007c91, #17a2b8); width: 75%;}
-    .strength-strong{background: linear-gradient(90deg, #28a745, #39ff14); width: 100%;}
-
-    .strength-feedback{
-      background: var(--feedback-bg);
-      border: 1px solid var(--feedback-border);
-      color: var(--feedback-text);
-      padding: 10px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-size: 0.85em;
-      display: none;
-      transition: all 0.3s ease;
-    }
-
-    .warning{
-      background: var(--warning-bg);
-      border: 2px solid var(--warning-border);
-      color: var(--warning-text);
-      padding: 12px;
-      border-radius: 10px;
-      margin: 10px 0;
-      font-size: 0.9em;
-      display: none;
-      transition: all 0.3s ease;
-    }
-
-    #lengthValue{
-      display: inline-block;
-      width: 90px;
-      margin-left: 10px;
-      padding: 6px 10px;
-      text-align: center;
-      font-family: inherit;
-      font-weight: bold;
-      font-size: 1em;
-    }
-
-    #strengthText{
-      text-align: center;
-      font-weight: bold;
-      color: var(--text-primary);
-      margin-top: 5px;
-      transition: color 0.3s ease;
-    }
-
-    .info-text{
-      color: var(--info-text);
-      font-size: 0.9em;
-      margin-top: 5px;
-      font-style: italic;
-      transition: color 0.3s ease;
-    }
-
-    .footer-credit{
-      text-align: center;
-      font-size: 0.85em;
-      color: var(--info-text);
-      margin-top: 30px;
-      padding: 10px 0;
-      border-top: 1px solid var(--feedback-border);
-      transition: color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .footer-credit a{
-      color: var(--password-color);
-      font-weight: bold;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .footer-credit a:hover{
-      text-decoration: underline;
-      color: var(--btn-gradient-start);
-    }
-
-    .vault-link-section {
-  margin: 25px 0;
-  padding: 20px;
-  background: linear-gradient(135deg, rgba(20, 83, 45, 0.1), rgba(15, 64, 55, 0.1));
-  border: 2px solid var(--input-focus);
-  border-radius: 15px;
-  transition: all 0.3s ease;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Fard (فَرْد) — Password Generator</title>
+<meta name="theme-color" content="#060807" />
+<meta name="description" content="A cryptographically secure password generator that weaves memorable phrases into real entropy. Powered by the Web Crypto API." />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+<link rel="icon" href="assets/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://fard-pw.netlify.app/" />
+<meta property="og:title" content="Fard (فَرْد) — Cryptographically Secure Password Generator" />
+<meta property="og:description" content="Uniqueness isn't special. It's expected. Cryptographically secure password generation with custom phrase embedding." />
+<meta property="og:image" content="https://fard-pw.netlify.app/assets/fard-hero.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:700;font-display:swap;src:url('assets/fonts/jetbrains-mono-latin-700-normal.woff2') format('woff2')}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  color-scheme:dark;
+  --bg:#060807;--card:#0D1311;--well:#090E0C;--elev:#1A2723;--strip:#0B1714;
+  --text:#F2F5F3;--muted:#758A82;--dim:#3E524A;--line:rgba(255,255,255,.08);
+  --accent:#00FF66;--accent-ink:#00FF66;--btn:#0E3B32;--btn-hover:#144D41;--btn-line:rgba(0,255,102,.3);--btn-text:#E6FFEE;
+  --c-l:#F2F5F3;--c-u:#7DD3FC;--c-n:#00FF66;--c-s:#F59E0B;--c-p:#F472B6;
+  --s1:#EF4444;--s2:#F97316;--s3:#EAB308;--s4:#10B981;--s5:#00FF66;
+  --maint:#F59E0B;--warn-bg:rgba(245,158,11,.1);--warn-text:#FBBF24;
 }
-
-[data-theme="light"] .vault-link-section {
-  background: linear-gradient(135deg, rgba(20, 83, 45, 0.05), rgba(15, 64, 55, 0.05));
-  border-color: var(--input-border);
+[data-theme="light"]{
+  color-scheme:light;
+  --bg:#F5F2EB;--card:#FFFFFF;--well:#FAF8F5;--elev:#ECE7DA;--strip:#E8EFEA;
+  --text:#1F2937;--muted:#6B645C;--dim:#A8A29A;--line:#E5E2DA;
+  --accent:#15803D;--accent-ink:#14532D;--btn:#14532D;--btn-hover:#0F4037;--btn-line:#14532D;--btn-text:#FFFFFF;
+  --c-l:#1F2937;--c-u:#0369A1;--c-n:#15803D;--c-s:#B45309;--c-p:#BE185D;
+  --s1:#DC2626;--s2:#EA580C;--s3:#CA8A04;--s4:#0F766E;--s5:#15803D;
+  --maint:#B45309;--warn-bg:#FEF3C7;--warn-text:#92400E;
 }
+html{background:var(--bg)}
+body{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;min-height:100vh;transition:background .3s,color .3s;-webkit-text-size-adjust:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{width:100%;max-width:1040px;margin:0 auto;padding:0 16px}
+[hidden]{display:none!important}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
-.vault-link-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(57, 255, 20, 0.2);
-}
+/* header */
+header{border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.bar{height:60px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-size:17px;white-space:nowrap}
+.brand img{width:30px;height:30px;border-radius:8px}
+.brand small{color:var(--muted);font-size:14px}
+.hdr-r{display:flex;align-items:center;gap:12px}
+.vlink{display:flex;align-items:center;gap:7px;color:var(--maint);border:1px dashed currentColor;border-radius:10px;padding:0 10px;min-height:36px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+.vlink:hover{background:var(--warn-bg)}
+.vlink .i{width:15px;height:15px}
+.v-long{display:none}
+.local{display:none;align-items:center;gap:7px;color:var(--muted);font-size:12px;white-space:nowrap}
+.local .i{width:14px;height:14px}
+.theme{display:flex;gap:2px;padding:4px;height:44px;border-radius:99px;border:1px solid var(--line);background:var(--card)}
+.t{width:34px;height:34px;border-radius:99px;display:grid;place-items:center;color:var(--muted);transition:background .2s,color .2s}
+.moon{background:var(--elev);color:var(--text)}
+[data-theme="light"] .moon{background:transparent;color:var(--muted)}
+[data-theme="light"] .sun{background:var(--elev);color:var(--text)}
 
-[data-theme="light"] .vault-link-section:hover {
-  box-shadow: 0 8px 20px rgba(20, 83, 45, 0.15);
-}
+/* intro */
+.intro{padding:26px 0 18px}
+h1{font-size:clamp(26px,7vw,40px);line-height:1.15;letter-spacing:-.03em;font-weight:700}
+.intro p{color:var(--muted);margin-top:8px}
 
-.vault-banner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
+/* layout: mobile = settings first, password last */
+.app{display:grid;grid-template-columns:1fr;gap:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;transition:background .3s}
+.head h2{font-size:17px}.head p{color:var(--muted);font-size:12px}
+.fh{font-weight:700;font-size:13px;display:block}
+.fh em,label em{font-style:normal;font-weight:400;color:var(--muted);font-size:12px}
+.help{color:var(--muted);font-size:12px}
 
-.vault-link-btn {
-  display: inline-block;
-  padding: 12px 30px;
-  background: linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end));
-  color: white;
-  text-decoration: none;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 1em;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
+/* length */
+.len{display:grid;grid-template-columns:1fr auto;grid-template-areas:"lab step" "rng rng";align-items:center;gap:8px 12px}
+.len>label{grid-area:lab}.len>.stepper{grid-area:step}.len>.rng{grid-area:rng}
+.stepper{display:flex;gap:6px;align-items:center}
+.stepper button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--well);font-weight:700;font-size:18px}
+.stepper button:hover{background:var(--elev)}
+input[type=number]{width:64px;height:44px;text-align:center;font-weight:700;background:var(--well);border:1px solid var(--line);border-radius:10px;color:var(--accent-ink);-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.rng{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:11px}
+input[type=range]{flex:1;height:32px;accent-color:var(--accent);background:transparent}
 
-.vault-link-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(57, 255, 20, 0.4);
-  border-color: var(--input-focus);
-}
+/* character types */
+.grid4{display:grid;grid-template-columns:1fr;gap:8px}
+.cell{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 12px;background:var(--well);border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.cell:hover{background:var(--elev)}
+.cell input{width:20px;height:20px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.cell b{display:block;font-weight:600;font-size:13px}
+.cell small{display:block;font-size:12px;font-weight:700;letter-spacing:.08em}
+.l{color:var(--c-l)}.u{color:var(--c-u)}.n{color:var(--c-n)}.s{color:var(--c-s)}.p{color:var(--c-p);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
 
-[data-theme="light"] .vault-link-btn:hover {
-  box-shadow: 0 6px 18px rgba(20, 83, 45, 0.3);
+/* inputs */
+input[type=text]{width:100%;min-height:48px;padding:0 14px;background:var(--well);border:1px solid var(--line);border-radius:10px}
+input[type=text]::placeholder{color:var(--dim)}
+input[type=text]:focus{border-color:var(--accent);outline:none}
+.place{display:flex;flex-direction:column;gap:2px}
+.place label{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer;font-size:13px}
+.place input{width:18px;height:18px;accent-color:var(--accent)}
+.tip{display:flex;gap:10px;align-items:flex-start;background:var(--well);border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--muted);font-size:12px}
+.tip .i{width:16px;height:16px;margin-top:2px}
+.warn{background:var(--warn-bg);color:var(--warn-text);border-radius:10px;padding:10px 12px;font-size:12px}
+
+/* output */
+.out{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:border-color .2s,background .3s}
+.out.copied{border-color:var(--accent)}
+.out-main{padding:18px;display:grid;grid-template-columns:1fr;gap:14px 24px;align-items:center}
+#pw{font-weight:700;letter-spacing:.05em;line-height:1.4;font-size:1.7rem;word-break:break-all;overflow-wrap:anywhere;min-height:48px;cursor:pointer;user-select:all}
+#pw span{white-space:pre-wrap}
+.acts{display:grid;grid-template-columns:1fr;gap:10px}
+.btn{min-height:48px;padding:0 20px;border-radius:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--btn-line);transition:background .15s,transform .1s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn.main{background:var(--btn);color:var(--btn-text)}.btn.main:hover{background:var(--btn-hover)}
+.btn.alt{background:var(--card);border-color:var(--line)}.btn.alt:hover{background:var(--elev)}
+.btn.done{background:var(--accent);color:#04140A;border-color:var(--accent)}
+.note{grid-column:1/-1;font-size:12px;color:var(--warn-text)}.note:empty{display:none}
+.strip{background:var(--strip);padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line)}
+.srow{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px 16px}
+.sl{display:flex;align-items:baseline;gap:10px}
+#strengthText{font-weight:700}
+#bits{color:var(--muted);font-size:12px}
+.tag{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+.tag .i{width:14px;height:14px}
+#tagText{transition:opacity .3s}
+.meter{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.meter i{height:10px;border-radius:99px;background:var(--line);transition:background .3s}
+.meter i:nth-child(1){--c:var(--s1)}.meter i:nth-child(2){--c:var(--s2)}.meter i:nth-child(3){--c:var(--s3)}.meter i:nth-child(4){--c:var(--s4)}.meter i:nth-child(5){--c:var(--s5)}
+.meter i.on{background:var(--c)}
+#strengthFeedback{color:var(--muted);font-size:12px}
+
+/* vault + footer */
+.vault{position:relative;overflow:hidden;margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 16px 16px}
+.vault::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:repeating-linear-gradient(135deg,var(--maint) 0 8px,transparent 8px 16px);opacity:.75}
+.vico{width:44px;height:44px;border-radius:50%;background:var(--warn-bg);color:var(--maint);display:grid;place-items:center;flex-shrink:0}
+.vault div{flex:1;min-width:200px}
+.vault b{display:block;font-size:13px}.vault small{color:var(--muted);font-size:12px}
+.vault a{color:var(--maint);border:1px solid currentColor;border-radius:99px;padding:6px 12px;font-size:12px;text-decoration:none;min-height:32px;display:inline-flex;align-items:center;gap:6px}
+.vault a .i{width:14px;height:14px}
+footer{padding:24px 0 calc(24px + env(safe-area-inset-bottom));color:var(--muted);font-size:12px;display:flex;flex-direction:column;gap:4px}
+footer a{color:var(--accent-ink);font-weight:700;text-decoration:none}footer a:hover{text-decoration:underline}
+
+@media(min-width:480px){.grid4{grid-template-columns:1fr 1fr}.v-long{display:inline}}
+@media(min-width:640px){
+  .wrap{padding:0 24px}
+  .local{display:flex}
+  #pw{font-size:2.2rem}
 }
-  </style>
+@media(min-width:860px){
+  .app{grid-template-columns:1fr 1fr;grid-template-areas:"len len" "out out" "head head" "types types" "inc exc";align-items:start}
+  .len{grid-area:len;grid-template-columns:auto 1fr auto;grid-template-areas:"lab rng step";gap:20px;padding:14px 26px;border-radius:16px 16px 0 0;border-bottom:0;margin-bottom:-16px}
+  .out{grid-area:out;border-radius:0 0 16px 16px}
+  .head{grid-area:head;margin-top:12px}
+  .types{grid-area:types}.inc{grid-area:inc}.exc{grid-area:exc}
+  .panel:not(.len){padding:22px 26px}
+  .grid4{grid-template-columns:repeat(4,1fr)}
+  .out-main{grid-template-columns:1fr auto;padding:20px 26px}
+  .acts{grid-template-columns:auto auto}
+  .strip{padding:14px 26px 18px}
+  footer{flex-direction:row;justify-content:space-between}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark/light theme">
-      <span id="themeIcon">🌙</span>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-gen" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+</defs></svg>
+
+<header><div class="wrap bar">
+  <div class="brand"><img src="assets/favicon.svg" alt="" width="30" height="30" /><span>Fard <small>(فَرْد)</small></span></div>
+  <div class="hdr-r">
+    <a class="vlink" href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer" aria-label="Fard Vault (under maintenance)" title="Under maintenance"><svg class="i"><use href="#i-wrench"/></svg><span><span class="v-long">Fard </span>Vault</span></a>
+    <span class="local"><svg class="i"><use href="#i-lock"/></svg>Generated on your device</span>
+    <button class="theme" id="themeBtn" type="button" aria-label="Switch between dark and light theme">
+      <span class="t sun"><svg class="i"><use href="#i-sun"/></svg></span><span class="t moon"><svg class="i"><use href="#i-moon"/></svg></span>
     </button>
-    <div class="header">
-      <div class="brand">
-        <img src="assets/fard-logo-animated.svg" alt="Fard logo" width="96" height="96" />
-        <div class="brand-text">
-          <h1>Fard (فَرْد)</h1>
-          <p>Uniqueness isn't special. It's expected.</p>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>A password, uniquely yours.</h1>
+    <p>Uniqueness isn't special. It's expected.</p>
+  </section>
+
+  <div class="app">
+    <div class="head"><h2>Make it yours</h2><p>Adjust your settings, then generate a new password.</p></div>
+
+    <section class="panel len" aria-label="Password length">
+      <label class="fh" for="length">Password length</label>
+      <div class="rng"><span>4</span><input type="range" id="length" min="4" max="128" value="16" /><span>128</span></div>
+      <div class="stepper">
+        <button type="button" id="dec" aria-label="Decrease length">−</button>
+        <input type="number" id="lengthValue" min="4" max="128" value="16" inputmode="numeric" aria-label="Exact length" />
+        <button type="button" id="inc" aria-label="Increase length">+</button>
+      </div>
+    </section>
+
+    <section class="panel types" aria-label="Character types">
+      <span class="fh">Character types</span>
+      <div class="grid4">
+        <label class="cell"><input type="checkbox" id="uppercase" checked /><span><b>Uppercase Letters</b><small class="u">ABCDEF</small></span></label>
+        <label class="cell"><input type="checkbox" id="lowercase" checked /><span><b>Lowercase Letters</b><small class="l">abcdef</small></span></label>
+        <label class="cell"><input type="checkbox" id="numbers" checked /><span><b>Numbers</b><small class="n">012345</small></span></label>
+        <label class="cell"><input type="checkbox" id="symbols" checked /><span><b>Symbols</b><small class="s">!@#$%^&amp;*</small></span></label>
+      </div>
+    </section>
+
+    <section class="panel inc" aria-label="Including">
+      <label class="fh" for="includeWord">Include a word or phrase <em>Optional</em></label>
+      <input type="text" id="includeWord" placeholder="Enter a word or phrase" autocomplete="off" spellcheck="false" />
+      <p class="help">Your phrase stays intact and shows in pink. Random characters fill the remaining length.</p>
+      <div id="placementOptions" hidden>
+        <span class="fh">Phrase placement</span>
+        <div class="place" role="radiogroup" aria-label="Phrase placement">
+          <label><input type="radio" name="placement" value="random" checked />Random position</label>
+          <label><input type="radio" name="placement" value="beginend" />Beginning or end only</label>
+          <label><input type="radio" name="placement" value="beginning" />Always at beginning</label>
+          <label><input type="radio" name="placement" value="end" />Always at end</label>
         </div>
       </div>
-    </div>
-    <div class="content">
-      <div class="form-group">
-        <label for="length">Password Length</label>
-        <input type="range" id="length" aria-label="Password length" min="4" max="128" value="16" oninput="updateLength()" />
-        <input type="number" id="lengthValue" min="4" max="128" value="16" inputmode="numeric" aria-label="Password length (type an exact number)" oninput="syncFromNumber()" onchange="commitNumber()" onkeydown="if(event.key==='Enter'){commitNumber();generatePassword();}" />
-      </div>
+      <div class="tip"><svg class="i"><use href="#i-info"/></svg><span>For stronger passwords, avoid names, dates, or phrases someone could guess.</span></div>
+      <div class="warn" id="lengthWarning" hidden></div>
+    </section>
 
-      <div class="form-group">
-        <label>Character Types</label>
-        <div class="checkbox-group">
-          <input type="checkbox" id="uppercase" checked />
-          <label for="uppercase">Uppercase Letters (A-Z)</label>
+    <section class="panel exc" aria-label="Excluding">
+      <label class="fh" for="excludeChars">Exclude characters <em>Optional</em></label>
+      <input type="text" id="excludeChars" placeholder="e.g. 0O1lI" autocomplete="off" spellcheck="false" />
+      <p class="help">Leave out characters you find easy to confuse.</p>
+      <div class="warn" id="conflictWarning" hidden>Some characters in your phrase are also in the exclude list. Your phrase is kept as typed.</div>
+    </section>
+
+    <section class="out" id="win" aria-label="Generated password">
+      <div class="out-main">
+        <div id="pw" role="region" aria-live="polite" aria-label="Generated password" title="Tap to copy"><div></div></div>
+        <div class="acts">
+          <button class="btn main" id="genBtn" type="button"><svg class="i"><use href="#i-gen"/></svg>Generate Password</button>
+          <button class="btn alt" id="copyBtn" type="button"><svg class="i"><use href="#i-copy"/></svg><span>Copy Password</span></button>
         </div>
-        <div class="checkbox-group">
-          <input type="checkbox" id="lowercase" checked />
-          <label for="lowercase">Lowercase Letters (a-z)</label>
+        <div class="note" id="note" role="status" aria-live="polite"></div>
+      </div>
+      <div class="strip">
+        <div class="srow">
+          <div class="sl"><span id="strengthText"></span><span id="bits"></span></div>
+          <span class="tag"><svg class="i"><use href="#i-lock"/></svg><span id="tagText"></span></span>
         </div>
-        <div class="checkbox-group">
-          <input type="checkbox" id="numbers" checked />
-          <label for="numbers">Numbers (0-9)</label>
-        </div>
-        <div class="checkbox-group">
-          <input type="checkbox" id="symbols" checked />
-          <label for="symbols">Symbols (!@#$%^&*)</label>
-        </div>
+        <div class="meter" id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <p id="strengthFeedback"></p>
       </div>
-
-      <div class="form-group">
-        <label for="includeWord">Include Word/Phrase (will be kept intact)</label>
-        <input type="text" id="includeWord" placeholder="e.g. MyPet2024, SecretPhrase, äöü@#$%" oninput="checkForConflicts()" />
-        
-        <div class="placement-options" id="placementOptions" style="display: none;">
-          <label style="margin-bottom: 10px; font-weight: bold; font-size: 0.95em;">Phrase Placement:</label>
-          <div class="radio-group">
-            <input type="radio" id="placementRandom" name="placement" value="random" checked />
-            <label for="placementRandom">Random position (anywhere in password)</label>
-          </div>
-          <div class="radio-group">
-            <input type="radio" id="placementBeginEnd" name="placement" value="beginend" />
-            <label for="placementBeginEnd">Beginning or end only</label>
-          </div>
-          <div class="radio-group">
-            <input type="radio" id="placementBeginning" name="placement" value="beginning" />
-            <label for="placementBeginning">Always at beginning</label>
-          </div>
-          <div class="radio-group">
-            <input type="radio" id="placementEnd" name="placement" value="end" />
-            <label for="placementEnd">Always at end</label>
-          </div>
-        </div>
-        <div class="info-text">💡 Your phrase will be inserted as-is without modification</div>
-      </div>
-
-      <div class="form-group">
-        <label for="excludeChars">Exclude Characters</label>
-        <input type="text" id="excludeChars" placeholder="e.g. 0O1lI" oninput="checkForConflicts()" />
-      </div>
-
-      <div class="warning" id="conflictWarning">
-        ⚠️ Some characters in your word/phrase are also in exclude list and will be removed.
-      </div>
-      <div class="warning" id="lengthWarning">
-        ⚠️ Your word/phrase is too long for the selected password length.
-      </div>
-
-      <button class="btn" onclick="generatePassword()">🎲 Generate Password</button>
-
-      <div class="generated-password" id="generatedPassword" aria-live="polite" role="region" style="display: none;"></div>
-      
-      <div style="text-align: center;">
-        <button class="btn" onclick="copyPassword()" id="copyBtn" style="display: none;">📋 Copy Password</button>
-      </div>
-
-      <div class="vault-link-section" style="text-align: center; margin: 20px 0;">
-        <div class="vault-banner">
-          <p style="font-size: 0.9em; margin-bottom: 10px; color: var(--text-primary); opacity: 0.9;">
-            🔐 Fard Vault is being fixed right now, we will be back!
-          </p>
-          <a href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer" class="vault-link-btn" style="opacity: 0.85;">
-            Fard Vault (Maintenance) ⏳
-          </a>
-        </div>
-      </div>
-
-      <div class="strength-bar">
-        <div class="strength-fill" id="strengthBar"></div>
-      </div>
-      <p id="strengthText"></p>
-      <div class="strength-feedback" id="strengthFeedback"></div>
-    </div>
-
-    <div class="footer-credit">
-      A <a href="https://mehedy.netlify.app" target="_blank" rel="noopener noreferrer">mehedyk</a> product. 
-      Fard Vault is being fixed right now, we will be back. 
-      All rights reserved. &copy; <span id="currentYear"></span>.
-      <script>
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-      </script>
-    </div>
+    </section>
   </div>
 
-  <script>
-    /*
-      Fard by @mehedyk (https://mehedy.netlify.app)
-      This code is protected by a custom license.
-      Redistribution, reuse, or modification is prohibited without permission.
-    */
+  <div class="vault">
+    <span class="vico"><svg class="i"><use href="#i-wrench"/></svg></span>
+    <div><b>Fard Vault is getting a fix.</b><small>Temporarily unavailable while we work on it. It will be back.</small></div>
+    <a href="https://fard-vault.vercel.app" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#i-alert"/></svg>Under maintenance</a>
+  </div>
 
-    let copyTimeout = null;
+  <footer>
+    <span>A <a href="https://mehedy.netlify.app" target="_blank" rel="noopener noreferrer">mehedyk</a> product. All rights reserved. &copy; <span id="year"></span></span>
+    <span>Cryptographically secure randomness. Powered by the Web Crypto API.</span>
+  </footer>
+</main>
 
-    // Slider moved: mirror it into the number box.
-    function updateLength(){
-      document.getElementById('lengthValue').value = document.getElementById('length').value;
-      checkForConflicts();
+<script>
+/*
+  Fard by @mehedyk (https://mehedy.netlify.app)
+  This code is protected by a custom license.
+  Redistribution, reuse, or modification is prohibited without permission.
+*/
+const $ = id => document.getElementById(id);
+const SETS = {
+  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  lowercase: 'abcdefghijklmnopqrstuvwxyz',
+  numbers: '0123456789',
+  symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+};
+const TAGS = [
+  'Built on your browser\u2019s Web Crypto API.',
+  'Your passwords are never stored or logged.',
+  'Unbiased randomness, with no modulo bias.',
+  'Keeps working offline once the page has loaded.'
+];
+let current = '', copyTimer = null;
+
+/* ---------- theme ---------- */
+function applyTheme(t){
+  if (t === 'light') document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', t === 'light' ? '#F5F2EB' : '#060807');
+}
+function toggleTheme(){
+  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  try { localStorage.setItem('theme', next); } catch(e){}
+}
+function initTheme(){
+  let t = 'dark';
+  try { t = localStorage.getItem('theme') || 'dark'; } catch(e){}
+  applyTheme(t);
+}
+
+/* ---------- rotating taglines ---------- */
+function startTags(){
+  const el = $('tagText'); let i = 0;
+  el.textContent = TAGS[0];
+  setInterval(() => {
+    el.style.opacity = 0;
+    setTimeout(() => { i = (i + 1) % TAGS.length; el.textContent = TAGS[i]; el.style.opacity = 1; }, 300);
+  }, 4000);
+}
+
+/* ---------- length controls ---------- */
+function updateLength(){ $('lengthValue').value = $('length').value; checkForConflicts(); }
+function syncFromNumber(){
+  const n = parseInt($('lengthValue').value, 10);
+  if (!isNaN(n) && n >= 4 && n <= 128){ $('length').value = n; checkForConflicts(); }
+}
+function commitNumber(){
+  let n = parseInt($('lengthValue').value, 10);
+  if (isNaN(n)) n = parseInt($('length').value, 10);
+  n = Math.min(128, Math.max(4, n));
+  $('lengthValue').value = n; $('length').value = n;
+  checkForConflicts();
+}
+function step(d){
+  $('lengthValue').value = (parseInt($('length').value, 10) || 16) + d;
+  commitNumber(); generatePassword();
+}
+
+/* ---------- warnings ---------- */
+function checkForConflicts(){
+  const word = $('includeWord').value, excl = $('excludeChars').value;
+  const len = parseInt($('length').value, 10);
+  $('placementOptions').hidden = !word.trim();
+  const lw = $('lengthWarning');
+  if (word && word.length >= len){
+    lw.textContent = `Your phrase (${word.length} characters) is as long as or longer than the password (${len}). Increase the length or shorten the phrase.`;
+    lw.hidden = false;
+  } else lw.hidden = true;
+  $('conflictWarning').hidden = !(word && excl && Array.from(word).some(c => excl.includes(c)));
+}
+
+/* ---------- secure randomness ---------- */
+// Unbiased random integer in [0, max-1]; rejection sampling removes modulo bias.
+function getSecureRandomInt(max){
+  if (max <= 1) return 0;
+  const maxValid = Math.floor(0xffffffff / max) * max;
+  const buf = new Uint32Array(1);
+  do { crypto.getRandomValues(buf); } while (buf[0] >= maxValid);
+  return buf[0] % max;
+}
+function cryptoShuffle(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = getSecureRandomInt(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.join('');
+}
+const pick = set => set ? set[getSecureRandomInt(set.length)] : '';
+function randomPart(length, full, sets){
+  if (length <= 0 || !full) return '';
+  const valid = sets.filter(s => s.length > 0);
+  let out = '';
+  if (valid.length > 1 && length >= valid.length){
+    for (const s of valid) out += pick(s);               // at least one of each type
+    for (let i = 0; i < length - valid.length; i++) out += pick(full);
+    return cryptoShuffle(out);
+  }
+  for (let i = 0; i < length; i++) out += pick(full);
+  return out;
+}
+
+/* ---------- generate ---------- */
+function generatePassword(){
+  try {
+    commitNumber();
+    const length = parseInt($('length').value, 10);
+    const word = $('includeWord').value, excl = $('excludeChars').value;
+    const place = (document.querySelector('input[name="placement"]:checked') || {}).value || 'random';
+
+    let sets = Object.keys(SETS).filter(k => $(k).checked).map(k => SETS[k]);
+    if (excl) sets = sets.map(s => [...s].filter(c => !excl.includes(c)).join(''));
+    sets = sets.filter(s => s.length);
+    const full = [...new Set(sets.join(''))].join('');
+
+    if (!full && !word){ note('Select at least one character type or add a phrase.'); return; }
+    if (word && word.length >= length){ checkForConflicts(); note('Shorten the phrase or increase the length.'); return; }
+
+    const rand = randomPart(length - word.length, full, sets);
+    let pwd = rand, start = -1;
+    if (word){
+      if (place === 'random') start = getSecureRandomInt(rand.length + 1);
+      else if (place === 'beginend') start = getSecureRandomInt(2) ? rand.length : 0;
+      else if (place === 'beginning') start = 0;
+      else start = rand.length;
+      pwd = rand.slice(0, start) + word + rand.slice(start);
     }
+    if (!pwd) pwd = randomPart(length, SETS.uppercase + SETS.lowercase + SETS.numbers, [SETS.uppercase, SETS.lowercase, SETS.numbers]);
 
-    // Typing in the number box: follow along only while the value is valid,
-    // so partial input like "2" on the way to "20" isn't snapped to 4.
-    function syncFromNumber(){
-      const n = parseInt(document.getElementById('lengthValue').value, 10);
-      if (!isNaN(n) && n >= 4 && n <= 128) {
-        document.getElementById('length').value = n;
-        checkForConflicts();
-      }
+    current = pwd;
+    render(pwd, start, word.length);
+    note('');
+    strength(length - word.length, full.length, word, place);
+  } catch (e){
+    console.error('Password generation error:', e);
+    note('Something went wrong while generating. Try again.');
+  }
+}
+
+function render(pwd, start, wlen){
+  const box = $('pw').firstChild;
+  box.textContent = '';
+  const chars = [...pwd];
+  chars.forEach((c, i) => {
+    const s = document.createElement('span');
+    s.className = (start >= 0 && i >= start && i < start + wlen) ? 'p'
+      : /[A-Z]/.test(c) ? 'u' : /[a-z]/.test(c) ? 'l' : /[0-9]/.test(c) ? 'n' : 's';
+    s.textContent = c;
+    box.appendChild(s);
+  });
+  const n = chars.length;
+  $('pw').style.fontSize = n <= 24 ? '' : n <= 48 ? '1.4rem' : n <= 80 ? '1.1rem' : '0.95rem';
+}
+function note(msg){ $('note').textContent = msg; }
+
+/* ---------- strength (5 levels) ---------- */
+function strength(randLen, charset, word, place){
+  let e = 0;
+  if (charset > 1 && randLen > 0){
+    e = randLen * Math.log2(charset);
+    if (word){
+      if (place === 'random') e += Math.log2(randLen + 1);
+      else if (place === 'beginend') e += 1;
     }
+  }
+  const bits = Math.max(0, Math.round(e));
+  let tier, label, msg;
+  if (bits < 40){
+    tier = 0; label = 'Weak';
+    msg = word && randLen < 4
+      ? 'Very low randomness. Increase the length to add random characters around your phrase.'
+      : 'Under 40 bits. Easy to crack. Increase the length or turn on more character types.';
+  } else if (bits < 65){
+    tier = 1; label = 'Fair'; msg = '40–64 bits. Fine for low-risk accounts.';
+  } else if (bits < 80){
+    tier = 2; label = 'Good'; msg = '65–79 bits. Holds up against typical offline brute-force attacks.';
+  } else if (bits < 100){
+    tier = 3; label = 'Strong'; msg = '80–99 bits. Exceptional resistance to brute-force attacks.';
+  } else {
+    tier = 4; label = 'Very strong'; msg = '100+ bits. Far beyond the reach of brute-force attacks.';
+  }
+  [...$('meter').children].forEach((el, i) => el.classList.toggle('on', i <= tier));
+  $('bits').textContent = `${bits} bits of entropy`;
+  $('strengthText').textContent = label;
+  $('strengthFeedback').textContent = msg + (word ? ' Your phrase adds no entropy; only the random characters count.' : '');
+}
 
-    // Finished typing (blur / Enter / Generate): clamp to 4-128 and sync both controls.
-    function commitNumber(){
-      const box = document.getElementById('lengthValue');
-      const slider = document.getElementById('length');
-      let n = parseInt(box.value, 10);
-      if (isNaN(n)) n = parseInt(slider.value, 10);
-      n = Math.min(128, Math.max(4, n));
-      box.value = n;
-      slider.value = n;
-      checkForConflicts();
-    }
+/* ---------- copy ---------- */
+function copyPassword(){
+  if (!current) return;
+  navigator.clipboard.writeText(current).then(() => {
+    const b = $('copyBtn'), label = b.querySelector('span');
+    clearTimeout(copyTimer);
+    label.textContent = 'Copied'; b.classList.add('done'); $('win').classList.add('copied');
+    copyTimer = setTimeout(() => { label.textContent = 'Copy Password'; b.classList.remove('done'); $('win').classList.remove('copied'); }, 2000);
+  }).catch(() => note('Copy was blocked. Press and hold the password to select it.'));
+}
 
-    function toggleCheckbox(id){
-      const checkbox = document.getElementById(id);
-      checkbox.checked = !checkbox.checked;
-    }
-
-    function checkForConflicts(){
-      const includeWord = document.getElementById('includeWord').value;
-      const excludeChars = document.getElementById('excludeChars').value;
-      const length = parseInt(document.getElementById('length').value);
-      const conflictWarning = document.getElementById('conflictWarning');
-      const lengthWarning = document.getElementById('lengthWarning');
-      const placementOptions = document.getElementById('placementOptions');
-      
-      placementOptions.style.display = includeWord.trim() ? 'block' : 'none';
-      
-      if (includeWord && includeWord.length >= length) {
-        if (lengthWarning) {
-          lengthWarning.textContent = `⚠️ Word/phrase (${includeWord.length} chars) is ≥ total password length (${length}). Please increase length or shorten phrase.`;
-          lengthWarning.style.display = 'block';
-        }
-      } else if (lengthWarning) {
-        lengthWarning.style.display = 'none';
-      }
-
-      if(includeWord && excludeChars){
-        const hasConflict = Array.from(includeWord).some(char => excludeChars.includes(char));
-        conflictWarning.style.display = hasConflict ? 'block' : 'none';
-      } else {
-        conflictWarning.style.display = 'none';
-      }
-    }
-
-    function copyPassword(){
-      const password = document.getElementById('generatedPassword').textContent;
-      if (!password) return;
-
-      navigator.clipboard.writeText(password).then(() => {
-        const btn = document.getElementById('copyBtn');
-        if (copyTimeout) clearTimeout(copyTimeout);
-
-        btn.textContent = '✅ Copied!';
-        btn.style.background = 'linear-gradient(135deg, #28a745, #39ff14)';
-        btn.style.color = '#0b0b0b';
-
-        copyTimeout = setTimeout(() => {
-          btn.textContent = '📋 Copy Password';
-          btn.style.background = '';
-          btn.style.color = '';
-          copyTimeout = null;
-        }, 2000);
-      }).catch(() => {
-        alert('Failed to copy password to clipboard');
-      });
-    }
-
-    function toggleTheme(){
-      const html = document.documentElement;
-      const themeIcon = document.getElementById('themeIcon');
-      const currentTheme = html.getAttribute('data-theme');
-      
-      if(currentTheme === 'light') {
-        html.removeAttribute('data-theme');
-        themeIcon.textContent = '🌙';
-        try{
-          localStorage.setItem('theme', 'dark');
-        } catch(e){}
-      } else{
-        html.setAttribute('data-theme', 'light');
-        themeIcon.textContent = '☀️';
-        try{
-          localStorage.setItem('theme', 'light');
-        }catch(e){}
-      }
-    }
-
-    function initializeTheme(){
-      const themeIcon = document.getElementById('themeIcon');
-      let savedTheme = 'dark';
-      
-      try{
-        savedTheme = localStorage.getItem('theme') || 'dark';
-      }catch(e){}
-      
-      if(savedTheme === 'light'){
-        document.documentElement.setAttribute('data-theme', 'light');
-        themeIcon.textContent = '☀️';
-      }else{
-        document.documentElement.removeAttribute('data-theme');
-        themeIcon.textContent = '🌙';
-      }
-    }
-
-    function escapeRegExp(string){
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    // Cryptographically secure unbiased random integer in [0, max - 1] (Rejection sampling eliminates modulo bias)
-    function getSecureRandomInt(max) {
-      if (max <= 1) return 0;
-      const maxValid = Math.floor(0xffffffff / max) * max;
-      const buffer = new Uint32Array(1);
-      do {
-        crypto.getRandomValues(buffer);
-      } while (buffer[0] >= maxValid);
-      return buffer[0] % max;
-    }
-
-    function insertPhraseAtRandomPosition(randomPart, phrase){
-      if (randomPart.length === 0) return phrase;
-      const position = getSecureRandomInt(randomPart.length + 1);
-      return randomPart.slice(0, position) + phrase + randomPart.slice(position);
-    }
-
-    function cryptoShuffle(array){
-      const arr = [...array];
-      for(let i = arr.length - 1; i > 0; i--){
-        const j = getSecureRandomInt(i + 1);
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr.join('');
-    }
-
-    function generateRandomCharacter(charset){
-      if (!charset || charset.length === 0) return '';
-      return charset[getSecureRandomInt(charset.length)];
-    }
-
-    function generateRandomPart(length, fullCharset, charsets){
-      if (length <= 0 || !fullCharset) return '';
-      
-      let result = '';
-      const validCharsets = charsets.filter(set => set.length > 0);
-      
-      if (validCharsets.length > 1 && length >= validCharsets.length){
-        for(let charset of validCharsets){
-          result += generateRandomCharacter(charset);
-        }
-        
-        const remaining = length - validCharsets.length;
-        for(let i = 0; i < remaining; i++){
-          result += generateRandomCharacter(fullCharset);
-        }
-        
-        result = cryptoShuffle(result);
-      } else {
-        for(let i = 0; i < length; i++){
-          result += generateRandomCharacter(fullCharset);
-        }
-      }
-      return result;
-    }
-
-    function generatePassword(){
-      try{
-        commitNumber();
-        const length = parseInt(document.getElementById('length').value);
-        const uppercase = document.getElementById('uppercase').checked;
-        const lowercase = document.getElementById('lowercase').checked;
-        const numbers = document.getElementById('numbers').checked;
-        const symbols = document.getElementById('symbols').checked;
-        const includeWord = document.getElementById('includeWord').value;
-        const excludeChars = document.getElementById('excludeChars').value;
-        
-        const placementElement = document.querySelector('input[name="placement"]:checked');
-        const placement = placementElement ? placementElement.value : 'random';
-
-        let charsets = [];
-        if (uppercase) charsets.push('ABCDEFGHIJKLMNOPQRSTUVWXYZ');
-        if (lowercase) charsets.push('abcdefghijklmnopqrstuvwxyz');
-        if (numbers) charsets.push('0123456789');
-        if (symbols) charsets.push('!@#$%^&*()_+-=[]{}|;:,.<>?');
-
-        let fullCharset = '';
-        charsets.forEach(set => fullCharset += set);
-
-        if(excludeChars){
-          for(let c of excludeChars){
-            fullCharset = fullCharset.replace(new RegExp(escapeRegExp(c), 'g'), '');
-            charsets = charsets.map(set => set.replace(new RegExp(escapeRegExp(c), 'g'), ''));
-          }
-          charsets = charsets.filter(set => set.length > 0);
-        }
-
-        fullCharset = [...new Set(fullCharset)].join('');
-
-        if (fullCharset === '' && !includeWord) {
-          alert('Please select at least one character type or add a word/phrase!');
-          return;
-        }
-
-        const lengthWarning = document.getElementById('lengthWarning');
-        if(includeWord && includeWord.length >= length) {
-          if (lengthWarning) {
-            lengthWarning.textContent = `⚠️ Word/phrase (${includeWord.length} chars) is ≥ total password length (${length}). Please increase length or shorten phrase.`;
-            lengthWarning.style.display = 'block';
-          }
-          return;
-        } else if (lengthWarning) {
-          lengthWarning.style.display = 'none';
-        }
-
-        let password = '';
-        let remainingLength = length;
-
-        if (includeWord) {
-          remainingLength -= includeWord.length;
-        }
-
-        const randomPart = generateRandomPart(remainingLength, fullCharset, charsets);
-
-        if (includeWord) {
-          switch (placement) {
-            case 'random':
-              password = insertPhraseAtRandomPosition(randomPart, includeWord);
-              break;
-            case 'beginend':
-              if (getSecureRandomInt(2) === 0) {
-                password = includeWord + randomPart;
-              } else {
-                password = randomPart + includeWord;
-              }
-              break;
-            case 'beginning':
-              password = includeWord + randomPart;
-              break;
-            case 'end':
-              password = randomPart + includeWord;
-              break;
-            default:
-              password = randomPart + includeWord;
-              break;
-          }
-        } else {
-          password = randomPart;
-        }
-
-        if (!password) {
-          password = generateRandomPart(length, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', '0123456789']);
-        }
-
-        document.getElementById('generatedPassword').style.display = 'block';
-        document.getElementById('generatedPassword').textContent = password;
-        document.getElementById('copyBtn').style.display = 'inline-block';
-
-        checkPasswordStrength(remainingLength, fullCharset.length, includeWord, placement);
-        
-      } catch (error) {
-        console.error('Password generation error:', error);
-        alert('An error occurred while generating the password. Please try again.');
-      }
-    }
-
-    function checkPasswordStrength(randomLength, charsetSize, includeWord, placement) {
-      let entropy = 0;
-      if (charsetSize > 1 && randomLength > 0) {
-        entropy = randomLength * Math.log2(charsetSize);
-        if (includeWord) {
-          if (placement === 'random') {
-            entropy += Math.log2(randomLength + 1);
-          } else if (placement === 'beginend') {
-            entropy += 1;
-          }
-        }
-      }
-      const entropyBits = Math.max(0, Math.round(entropy));
-
-      const bar = document.getElementById('strengthBar');
-      const text = document.getElementById('strengthText');
-      const feedback = document.getElementById('strengthFeedback');
-
-      let rating = '';
-      if (entropyBits < 40) {
-        bar.className = 'strength-fill strength-weak';
-        rating = 'Weak';
-        if (feedback) {
-          feedback.textContent = includeWord && randomLength < 4
-            ? '⚠️ Very low randomness. Increase password length to add more random entropy around your phrase.'
-            : '⚠️ Weak (< 40 bits). Easily crackable. Increase length or enable more character types.';
-          feedback.style.display = 'block';
-        }
-      } else if (entropyBits < 65) {
-        bar.className = 'strength-fill strength-fair';
-        rating = 'Fair';
-        if (feedback) {
-          feedback.textContent = 'Moderate security (40–64 bits). Suitable for non-critical accounts.';
-          feedback.style.display = 'block';
-        }
-      } else if (entropyBits < 80) {
-        bar.className = 'strength-fill strength-good';
-        rating = 'Good';
-        if (feedback) {
-          feedback.textContent = 'Strong security (65–79 bits). Resilient against typical offline brute-force attacks.';
-          feedback.style.display = 'block';
-        }
-      } else {
-        bar.className = 'strength-fill strength-strong';
-        rating = 'Very Strong';
-        if (feedback) {
-          feedback.textContent = 'Cryptographically solid (80+ bits). Exceptional resistance against all brute-force attacks.';
-          feedback.style.display = 'block';
-        }
-      }
-
-      text.textContent = `${rating} | Entropy: ${entropyBits} bits`;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      try {
-        initializeTheme();
-        updateLength();
-        generatePassword();
-        
-        document.getElementById('includeWord').addEventListener('input', checkForConflicts);
-      } catch (error) {
-        console.error('Initialization error:', error);
-      }
-    });
-  </script>
+/* ---------- wiring ---------- */
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    initTheme();
+    startTags();
+    $('year').textContent = new Date().getFullYear();
+    $('themeBtn').addEventListener('click', toggleTheme);
+    $('genBtn').addEventListener('click', generatePassword);
+    $('copyBtn').addEventListener('click', copyPassword);
+    $('pw').addEventListener('click', copyPassword);
+    $('dec').addEventListener('click', () => step(-1));
+    $('inc').addEventListener('click', () => step(1));
+    $('length').addEventListener('input', () => { updateLength(); generatePassword(); });
+    $('lengthValue').addEventListener('input', syncFromNumber);
+    $('lengthValue').addEventListener('change', generatePassword);
+    $('lengthValue').addEventListener('keydown', e => { if (e.key === 'Enter') generatePassword(); });
+    ['uppercase','lowercase','numbers','symbols'].forEach(id => $(id).addEventListener('change', generatePassword));
+    document.querySelectorAll('input[name="placement"]').forEach(r => r.addEventListener('change', generatePassword));
+    $('includeWord').addEventListener('input', checkForConflicts);
+    $('excludeChars').addEventListener('input', checkForConflicts);
+    $('includeWord').addEventListener('change', generatePassword);
+    $('excludeChars').addEventListener('change', generatePassword);
+    updateLength();
+    generatePassword();
+  } catch (e){ console.error('Initialization error:', e); }
+});
+</script>
 </body>
 </html>
