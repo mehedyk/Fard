@@ -7,7 +7,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.0.1-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.1.0-brightgreen?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-All_Rights_Reserved-red?style=for-the-badge)
 ![Security](https://img.shields.io/badge/security-cryptographically_secure-blue?style=for-the-badge)
 
@@ -46,22 +46,29 @@
 Uses `crypto.getRandomValues()` with rejection sampling to avoid modulo bias. No `Math.random()` anywhere.
 
 ### 🎨 **Beautiful Dark/Light Themes**
-Switch seamlessly between elegant dark and light modes with smooth transitions.
+Switch between a dark and a light "eggshell" theme with the sun/moon toggle in the header. Your choice is remembered.
+
+### 🌈 **Color-Coded Characters**
+Every character type has its own color (uppercase, lowercase, numbers, symbols), so you can read a password at a glance.
 
 ### 🧩 **Custom Phrase Integration**
-Include a memorable word or phrase and Fard weaves random characters around it. The phrase adds no entropy: the strength score counts only the random characters.
+Include a memorable word or phrase and Fard weaves random characters around it. Your phrase is highlighted in pink. It adds no entropy: the strength score counts only the random characters.
 
 </td>
 <td width="50%">
 
 ### ⚙️ **Flexible Configuration**
-- Password length: 4-128 characters (slider or exact number)
+- Password length: 4-128 characters (slider, +/- buttons, or exact number)
 - Uppercase, lowercase, numbers, symbols
 - Character exclusion options
 - Smart placement controls
+- The password updates live as you change settings
 
 ### 📊 **Real-time Strength Analysis**
-Instant entropy calculation and visual strength indicators.
+Instant entropy calculation with a five-level, color-coded strength indicator.
+
+### 📱 **Mobile-First Layout**
+Built for phones first: settings come first, then your password. On desktop everything fits on one screen with the password up top.
 
 ### 🎲 **Smart Generation**
 Includes at least one character from each selected type whenever the length leaves room for it.
@@ -106,10 +113,10 @@ Download the repository as a ZIP and open `index.html`. Everything the page need
 
 ### Basic Password Generation
 
-1. **Adjust length** using the slider (4-128 characters)
+1. **Adjust length** using the slider, the +/- buttons, or by typing a number (4-128 characters)
 2. **Select character types** (uppercase, lowercase, numbers, symbols)
-3. **Click "Generate Password"** 🎲
-4. **Copy with one click** 📋
+3. **Watch the password update**, or click **"Generate Password"** 🎲 for a fresh one
+4. **Copy with one click** 📋 (the button, or tap the password itself)
 
 ### Advanced Features
 
@@ -170,9 +177,10 @@ randomLength = password length − phrase length
 
 **Strength ratings:**
 - 🔴 **Weak** (< 40 bits)
-- 🟡 **Fair** (40–64 bits)
-- 🔵 **Good** (65–79 bits)
-- 🟢 **Very Strong** (≥ 80 bits)
+- 🟠 **Fair** (40–64 bits)
+- 🟡 **Good** (65–79 bits)
+- 🔵 **Strong** (80–99 bits)
+- 🟢 **Very Strong** (≥ 100 bits)
 
 The score is guidance, not a guarantee. It assumes the attacker knows the character set you chose.
 
@@ -189,7 +197,7 @@ The score is guidance, not a guarantee. It assumes the attacker knows the charac
 
 ## 🎨 Themes
 
-Fard has a dark theme (default) and a light "eggshell" theme. Your choice is saved in your browser's `localStorage` (the only thing Fard stores) and never leaves your device.
+Fard has a dark theme (default) and a light "eggshell" theme, switched with the sun/moon toggle in the header. Your choice is saved in your browser's `localStorage` (the only thing Fard stores) and never leaves your device.
 
 ---
 
@@ -241,6 +249,8 @@ Fard/
 | Works offline | ✅ |
 | Custom phrase integration | ✅ |
 | Dark and light themes | ✅ |
+| Color-coded password characters | ✅ |
+| Mobile-first layout | ✅ |
 | No tracking or analytics | ✅ |
 | Source available for inspection | ✅ (proprietary license, see below) |
 
